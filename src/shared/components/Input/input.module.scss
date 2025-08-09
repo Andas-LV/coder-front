@@ -1,0 +1,122 @@
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.inputField {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+  background: var(--color-background);
+  outline: none;
+}
+
+.inputField:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.inputField:disabled {
+  background-color: var(--color-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.inputField::placeholder {
+  color: transparent;
+}
+
+.floatingLabel {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: var(--color-muted-foreground);
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+  background: var(--color-background);
+  padding: 0 0.25rem;
+  z-index: 1;
+}
+
+.floatingLabel.active,
+.inputField:focus + .floatingLabel,
+.inputField:not(:placeholder-shown) + .floatingLabel {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.inputField:focus + .floatingLabel {
+  color: var(--primary);
+}
+
+.floatingLabel.hasError {
+  color: var(--color-destructive);
+}
+
+.required {
+  color: var(--color-destructive);
+}
+
+.passwordWrapper {
+  position: relative;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--color-muted-foreground);
+  transition: color 0.2s ease-in-out;
+  z-index: 2;
+}
+
+.eyeButton:hover {
+  color: var(--color-foreground);
+}
+
+.eyeButton:focus {
+  outline: none;
+  color: var(--primary);
+}
+
+.inputField.hasPasswordToggle {
+  padding-right: 48px;
+}
+
+.errorMessage {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-destructive);
+}
+
+.helperText {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-muted-foreground);
+}
+
+.inputField.hasError {
+  border-color: var(--color-destructive);
+}
+
+.inputField.hasError:focus {
+  border-color: var(--color-destructive);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}

@@ -1,0 +1,94 @@
+.actionButton {
+  height: 2rem;
+  width: 2rem;
+  padding: 0;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: hsl(var(--accent));
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.actionButtonActive {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+}
+
+.actionIcon {
+  height: 0.875rem;
+  width: 0.875rem;
+  transition: color 0.2s ease-in-out;
+
+  &.actionIconActive {
+    color: hsl(var(--primary));
+  }
+}
+
+// Специфичные стили для разных типов кнопок
+.copyButton {
+  &:hover .actionIcon {
+    color: hsl(var(--primary));
+  }
+}
+
+.likeButton {
+  &.actionButtonActive {
+    background-color: hsl(var(--primary) / 0.1);
+
+    .actionIcon {
+      color: hsl(var(--primary));
+      fill: hsl(var(--primary));
+    }
+  }
+}
+
+.dislikeButton {
+  &.actionButtonActive {
+    background-color: hsl(var(--destructive) / 0.1);
+
+    .actionIcon {
+      color: hsl(var(--destructive));
+      fill: hsl(var(--destructive));
+    }
+  }
+}
+
+// Анимация для копирования
+.copySuccess {
+  .actionIcon {
+    color: hsl(var(--primary));
+    animation: checkmark 0.3s ease-in-out;
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Адаптивность для мобильных устройств
+@media (max-width: 768px) {
+  .actionButton {
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+
+  .actionIcon {
+    height: 0.75rem;
+    width: 0.75rem;
+  }
+}
+.Buttons {}

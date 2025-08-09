@@ -1,0 +1,103 @@
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+
+  .aiInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .aiAvatar {
+      width: 40px;
+      height: 40px;
+    }
+
+    .aiIcon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .aiDetails {
+      .aiName {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--color-card-foreground);
+        margin: 0;
+      }
+
+      .aiDescription {
+        font-size: 0.875rem;
+        color: var(--color-muted-foreground);
+        margin: 0;
+      }
+
+      .errorMessage {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+        padding: 0.5rem;
+        background: var(--color-destructive);
+        border: 1px solid var(--color-destructive);
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: var(--color-destructive-foreground);
+
+        .errorIcon {
+          width: 14px;
+          height: 14px;
+          flex-shrink: 0;
+        }
+
+        .clearError {
+          height: 20px;
+          width: 20px;
+          padding: 0;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  .headerActions {
+    display: flex;
+    gap: 0.5rem;
+
+    .actionButton {
+      width: 36px;
+      height: 36px;
+    }
+
+    .actionIcon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .chatHeader {
+    padding: 0.75rem 1rem;
+
+    .aiInfo {
+      .aiDetails {
+        .aiName {
+          font-size: 1rem;
+        }
+
+        .aiDescription {
+          font-size: 0.8rem;
+        }
+
+        .errorMessage {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}

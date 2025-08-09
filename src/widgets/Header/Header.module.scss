@@ -1,0 +1,36 @@
+.header {
+  height: var(--header-height);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-card);
+
+  .container {
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 768px) {
+      padding: 0 1rem;
+    }
+  }
+}
+
+.desktopHeader {
+  display: none;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    display: contents;
+  }
+}
+
+.mobileHeader {
+  display: contents;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
