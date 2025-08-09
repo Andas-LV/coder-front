@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { routes } from "@/core/config/routes";
 import type { Session } from "next-auth";
 import { Avatar } from "@/shared/components/Avatar/Avatar";
-import { ThemeToggle } from "@/shared/components/ThemeToggle";
+import { ThemeToggle } from "@/widgets/ThemeToggle/ThemeToggle";
 
 interface AuthSectionProps {
 	session: Session | null;
@@ -29,13 +29,13 @@ export const AuthSection = ({
 		try {
 			await signOut({ redirect: false });
 			toast.success("Вы вышли из аккаунта", {
-				position: "top-right",
+				position: "top-center",
 			});
 			router.push(routes.home());
 		} catch (error) {
 			console.error(error);
 			toast.error("Что-то пошло не так", {
-				position: "top-left",
+				position: "top-center",
 			});
 		}
 	};
@@ -67,8 +67,11 @@ export const AuthSection = ({
 								)}
 							</div>
 						</div>
-						<ThemeToggle />
 						<div className={styles.separator} />
+
+						<div>
+							<ThemeToggle />
+						</div>
 
 						<Link href={routes.profile()} className={styles.dropdownItem}>
 							<User />

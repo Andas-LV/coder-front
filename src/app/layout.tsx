@@ -4,7 +4,6 @@ import "../core/styles/globals.css";
 import React, { Suspense } from "react";
 import Loading from "@/shared/components/Loading/Loading";
 import { AllProviders } from "@/core/providers/AllProviders";
-import Header from "@/widgets/Header/Header";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -29,7 +28,6 @@ export default function RootLayout({
 			<body className={`${manrope.className}`}>
 				<Suspense fallback={<Loading />}>
 					<AllProviders>
-						<Header />
 						{children}
 						<Toaster />
 					</AllProviders>

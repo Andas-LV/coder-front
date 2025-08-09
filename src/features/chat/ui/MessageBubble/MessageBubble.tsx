@@ -45,7 +45,7 @@ export const MessageBubble = ({ request }: MessageBubbleProps) => {
 				<div className={styles.aiMessage}>
 					<div className={styles.messageContent}>
 						<div className={styles.messageText}>
-							<ReactMarkdown>{request.response}</ReactMarkdown>
+							<ReactMarkdown >{request.response}</ReactMarkdown>
 
 							<div className={styles.messageActions}>
 								<CopyButton text={request.response} />

@@ -20,7 +20,6 @@ export default function DesktopHeader() {
 		{ href: routes.chats(), label: "Чаты" },
 		{ href: "/prices", label: "Цены" },
 		{ href: routes.resources(), label: "ИИ-модели" },
-		{ href: "/stacks", label: "Стэки" },
 	];
 
 	return (

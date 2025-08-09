@@ -12,6 +12,7 @@ export interface CustomInputProps
 	error?: string;
 	helperText?: string;
 	type?: "text" | "email" | "password" | "number" | "tel" | "url";
+	placeholder?: string;
 }
 
 const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
@@ -24,6 +25,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
 			type = "text",
 			className,
 			value,
+			placeholder,
 			...props
 		},
 		ref,
@@ -52,7 +54,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(
               ${className || ""}
             `}
 						value={value}
-						placeholder=" "
+						placeholder={placeholder}
 						{...props}
 					/>
 

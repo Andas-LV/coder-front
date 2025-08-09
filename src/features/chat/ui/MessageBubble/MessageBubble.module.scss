@@ -33,11 +33,17 @@
   line-height: 1.5;
   word-wrap: break-word;
   white-space: pre-wrap;
+
+  pre, code {
+    white-space: pre-wrap !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
 }
 
 .userMessage .messageText {
   background-color: var(--primary);
-  color: var(--primary-foreground);
+  color: var(--primary-white);
   border-bottom-right-radius: 0.25rem;
 }
 

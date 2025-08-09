@@ -28,7 +28,7 @@ export default function ChatsPageComponent() {
 	return (
 		<div className={styles.chatsPage}>
 			<ResizablePanelGroup direction="horizontal">
-				<ResizablePanel defaultSize={30}>
+				<ResizablePanel defaultSize={30} minSize={15}>
 					<div className={styles.sidebar}>
 						<ChatsSidebar
 							chats={chats}
@@ -38,7 +38,7 @@ export default function ChatsPageComponent() {
 					</div>
 				</ResizablePanel>
 				<ResizableHandle />
-				<ResizablePanel defaultSize={70}>
+				<ResizablePanel defaultSize={70} minSize={35}>
 					<div className={styles.mainContent}>
 						{selectedChatId ? (
 							<CurrentChat chatId={selectedChatId} />

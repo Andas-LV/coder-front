@@ -5,6 +5,7 @@ import { formatDate } from "../../utils/formatDate";
 import { IChatsList } from "@/entities/chats/types/chatsTypes";
 import { ChatItemMenu } from "../ChatItemMenu/ChatItemMenu";
 import styles from "./ChatItem.module.scss";
+import { getModelById } from "@/shared/utils/authProviders";
 
 interface Props {
 	chat: IChatsList;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export const ChatItem = ({ chat, selected, onSelect }: Props) => {
+	const model = getModelById(chat.aiProvider);
+
 	return (
 		<div
 			className={`${styles.chatItem} ${selected ? styles.selected : ""}`}
@@ -25,7 +28,11 @@ export const ChatItem = ({ chat, selected, onSelect }: Props) => {
 				</div>
 
 				<div className={styles.chatMeta}>
-					<Badge variant="secondary" className={styles.aiProviderBadge}>
+					<Badge
+						variant="default"
+						className={styles.aiProviderBadge}
+						style={{ backgroundColor: model?.color ?? "var(--color-accent)" }}
+					>
 						{chat.aiProvider}
 					</Badge>
 					<span className={styles.chatDate}>{formatDate(chat.updatedAt)}</span>

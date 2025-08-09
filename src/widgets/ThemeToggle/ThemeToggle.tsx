@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { Button } from "@/shared/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -14,14 +13,17 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { Laptop, Moon, Sun, Check } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import styles from "./ThemeToggle.module.scss";
 
 type ThemeOption = "light" | "dark" | "system";
 
-export interface ThemeToggleProps {
-	showLabel?: boolean;
+interface ThemeOptions {
+	key: ThemeOption;
+	label: string;
+	icon: React.ComponentType<{ className?: string }>;
 }
 
-export function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
+export function ThemeToggle() {
 	const { setTheme, resolvedTheme, theme } = useTheme();
 	const [mounted, setMounted] = useState(false);
 
@@ -31,34 +33,22 @@ export function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
 		mounted ? (theme === "system" ? "system" : resolvedTheme) : "system"
 	) as ThemeOption;
 
-	const options: {
-		key: ThemeOption;
-		label: string;
-		icon: React.ComponentType<{ className?: string }>;
-	}[] = [
+	const options: ThemeOptions[] = [
+		{ key: "system", label: "Система", icon: Laptop },
 		{ key: "light", label: "Светлая", icon: Sun },
 		{ key: "dark", label: "Тёмная", icon: Moon },
-		{ key: "system", label: "Система", icon: Laptop },
 	];
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button
-					variant="outline"
-					size={showLabel ? "default" : "icon"}
-					aria-label="Переключатель темы"
+				<button
+					className={styles.dropdownItem}
+					aria-label="Выбор темы"
 				>
-					{/* Animated icon switch */}
-					<Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-					<Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-					{showLabel && (
-						<span className="ml-2 hidden sm:inline">
-							{mounted ? labelByKey(current) : "Тема"}
-						</span>
-					)}
-					<span className="sr-only">Открыть выбор темы</span>
-				</Button>
+					<Moon className={styles.icon} />
+					<span>Тема: {labelByKey(current)}</span>
+				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-40">
 				<DropdownMenuLabel>Тема</DropdownMenuLabel>

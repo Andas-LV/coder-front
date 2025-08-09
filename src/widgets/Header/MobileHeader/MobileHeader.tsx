@@ -53,9 +53,6 @@ export default function MobileHeader() {
 						<Link href={routes.resources()} className={styles.mobileNavItem}>
 							ИИ-модели
 						</Link>
-						<Link href={routes.home()} className={styles.mobileNavItem}>
-							Стэки
-						</Link>
 					</div>
 				</SheetContent>
 			</Sheet>

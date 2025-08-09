@@ -1,4 +1,5 @@
 import type { AIModelData } from "../types";
+import { AiTypes } from "@/shared/types/AiTypes";
 
 export const AI_MODELS_DATA: AIModelData[] = [
 	{
