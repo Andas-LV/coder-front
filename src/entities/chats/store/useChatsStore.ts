@@ -6,6 +6,7 @@ import type {
 	ICreateChat,
 	IRequest,
 } from "@/entities/chats/types/chatsTypes";
+import { messagesDB } from "@/entities/chats/lib/messages.db";
 
 interface ChatsState {
 	chats: IChatsList[] | null;
@@ -105,7 +106,7 @@ export const useChatsStore = create<ChatsState>((set, get) => ({
 		}
 	},
 
-	addRequest: (chatId, request) => {
+	addRequest: async (chatId, request) => {
 		const { chatById } = get();
 		set({ loading: true, error: null });
 
@@ -118,9 +119,11 @@ export const useChatsStore = create<ChatsState>((set, get) => ({
 				loading: false,
 			});
 		}
+
+		await messagesDB.messages.put({ ...request, chatId });
 	},
 
-	updateRequestResponse: (chatId, requestId, response) => {
+	updateRequestResponse: async (chatId, requestId, response) => {
 		const { chatById } = get();
 		set({ loading: true, error: null });
 		if (chatById && chatById.id === chatId) {
@@ -136,5 +139,7 @@ export const useChatsStore = create<ChatsState>((set, get) => ({
 				loading: false,
 			});
 		}
+
+		await messagesDB.messages.update(requestId, { response });
 	},
 }));

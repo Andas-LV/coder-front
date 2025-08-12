@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 	description: "description",
 	creator: "Andas.S",
 	generator: "Next.js",
-	// icons: {
-	// 	icon: "/logo.svg",
-	// 	shortcut: "/logo.svg",
-	// 	apple: "/logo.svg",
-	// },
+	icons: {
+		icon: "/logo.png",
+		shortcut: "/logo.png",
+		apple: "/logo.png",
+	},
 };
 
 export default function RootLayout({
