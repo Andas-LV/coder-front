@@ -12,11 +12,11 @@ export const LoginCard = () => {
 		try {
 			await signIn(provider, { callbackUrl: routes.home(), redirect: true });
 			toast.success("Вы успешно вошли в аккаунта", {
-				position: "bottom-right",
+				position: "top-center",
 			});
 		} catch (e) {
-			toast.success("Что-то пошло не так", {
-				position: "bottom-right",
+			toast.error("Что-то пошло не так", {
+				position: "bottom-center",
 			});
 		}
 	};

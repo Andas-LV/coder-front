@@ -18,7 +18,7 @@ export default function DesktopHeader() {
 
 	const navItems = [
 		{ href: routes.chats(), label: "Чаты" },
-		{ href: "/prices", label: "Цены" },
+		{ href: routes.home(), label: "Цены" },
 		{ href: routes.resources(), label: "ИИ-модели" },
 	];
 

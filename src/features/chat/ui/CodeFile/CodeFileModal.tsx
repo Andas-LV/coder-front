@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/shared/components/ui/button"
 import { Input } from "@/shared/components/ui/input"
 import { Textarea } from "@/shared/components/ui/textarea"
@@ -19,9 +19,21 @@ interface CodeFileModalProps {
 }
 
 export const CodeFileModal = ({ open, onOpenChange, onSave, editingFile }: CodeFileModalProps) => {
-	const [name, setName] = useState(editingFile?.name || "")
-	const [content, setContent] = useState(editingFile?.content || "")
-	const [language, setLanguage] = useState(editingFile?.language || "typescript")
+	const [name, setName] = useState("")
+	const [content, setContent] = useState("")
+	const [language, setLanguage] = useState("typescript")
+
+	useEffect(() => {
+		if (editingFile && editingFile.language) {
+			setName(editingFile.name)
+			setContent(editingFile.content)
+			setLanguage(editingFile.language)
+		} else {
+			setName("")
+			setContent("")
+			setLanguage("typescript")
+		}
+	}, [editingFile])
 
 	const handleSave = () => {
 		if (!name.trim() || !content.trim()) return
