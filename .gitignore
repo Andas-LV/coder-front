@@ -44,3 +44,6 @@ next-env.d.ts
 .idea
 *storybook.log
 scripts
+
+# mobile
+/mobile
