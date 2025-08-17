@@ -25,6 +25,7 @@ body {
 	--darken: #2b2b2b;
 	--radius: 0.625rem;
 	--header-height: 6rem;
+	--header-modile-height: 4rem;
 	--chat-input-height: 6rem;
 
 	--background: oklch(0.97 0.003 90);

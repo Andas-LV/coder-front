@@ -52,7 +52,7 @@ export const ScrollToBottomButton = ({
 			onClick={scrollToBottom}
 			size="icon"
 			className={cn(
-				"fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50",
+				"fixed bottom-10 sm:bottom-20 left-1/2 transform -translate-x-1/2 z-50",
 				"bg-[#fff] hover:bg-[#fff]/90 text-primary-foreground",
 				"rounded-2xl shadow-lg border border-border/20",
 				"transition-all duration-200 ease-in-out",

@@ -1,17 +1,22 @@
 "use client";
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
-import { Settings, MoreVertical, AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import styles from "./ChatHeader.module.scss";
 import { AI_INFO } from "../../const";
 import { useAiStore } from "@/entities/ai";
+import { ChatItemMenu } from "@/widgets/ChatsSidebar/ui/ChatItemMenu/ChatItemMenu";
+import { useChatsStore } from "@/entities/chats";
 
-interface ChatHeaderProps {}
+interface ChatHeaderProps {
+	onBack?: () => void;
+}
 
-export const ChatHeader = ({}: ChatHeaderProps) => {
+export const ChatHeader = ({ onBack }: ChatHeaderProps) => {
 	const { ai, error, clearError } = useAiStore();
+	const { chatById } = useChatsStore()
 
-	if (!ai) return null;
+	if (!ai || !chatById) return null;
 
 	const aiInfo = AI_INFO[ai];
 	const IconComponent = aiInfo.icon;
@@ -19,6 +24,16 @@ export const ChatHeader = ({}: ChatHeaderProps) => {
 	return (
 		<div className={styles.chatHeader}>
 			<div className={styles.aiInfo}>
+				{onBack && (
+					<Button
+						variant="ghost"
+						size="icon"
+						className={styles.actionButton}
+						onClick={onBack}
+					>
+						<ArrowLeft className={styles.actionIcon} />
+					</Button>
+				)}
 				<Avatar className={styles.aiAvatar}>
 					<AvatarFallback style={{ backgroundColor: `${aiInfo.color}15` }}>
 						<IconComponent
@@ -29,7 +44,6 @@ export const ChatHeader = ({}: ChatHeaderProps) => {
 				</Avatar>
 				<div className={styles.aiDetails}>
 					<h2 className={styles.aiName}>{aiInfo.name}</h2>
-					<p className={styles.aiDescription}>{aiInfo.description}</p>
 					{error && (
 						<div className={styles.errorMessage}>
 							<AlertCircle className={styles.errorIcon} />
@@ -47,14 +61,7 @@ export const ChatHeader = ({}: ChatHeaderProps) => {
 				</div>
 			</div>
 
-			<div className={styles.headerActions}>
-				<Button variant="ghost" size="icon" className={styles.actionButton}>
-					<Settings className={styles.actionIcon} />
-				</Button>
-				<Button variant="ghost" size="icon" className={styles.actionButton}>
-					<MoreVertical className={styles.actionIcon} />
-				</Button>
-			</div>
+			<ChatItemMenu chat={chatById}/>
 		</div>
 	);
 };

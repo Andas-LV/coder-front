@@ -8,12 +8,17 @@ import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { useAiStore } from "@/entities/ai";
 import { useChatsStore } from "@/entities/chats";
 import { ScrollToBottomButton } from "@/shared/components/Buttons";
+import { ChatHeader } from "../ui/ChatHeader/ChatHeader";
+import useIsMobile from "@/shared/hooks/useIsMobile";
 
 interface CurrentChatProps {
 	chatId: string | null;
+	onBack?: () => void;
 }
 
-export const CurrentChat = ({ chatId }: CurrentChatProps) => {
+export const CurrentChat = ({ chatId, onBack }: CurrentChatProps) => {
+	const isMobile = useIsMobile();
+
 	const { setAiState } = useAiStore();
 	const { chatById, getChatById, loading } = useChatsStore();
 
@@ -46,7 +51,7 @@ export const CurrentChat = ({ chatId }: CurrentChatProps) => {
 
 	useEffect(() => {
 		setAiState(chatById?.aiProvider || null);
-	}, [chatById]);
+	}, [chatById, setAiState]);
 
 	useEffect(() => {
 		if (chatId) {
@@ -56,6 +61,8 @@ export const CurrentChat = ({ chatId }: CurrentChatProps) => {
 
 	return (
 		<div className="relative">
+			{isMobile && <ChatHeader onBack={onBack} />}
+
 			<ScrollArea className={styles.aiPage} ref={scrollAreaRef}>
 				<ChatMessages />
 				<ChatInput />

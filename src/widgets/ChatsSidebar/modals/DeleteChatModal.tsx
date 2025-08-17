@@ -1,13 +1,13 @@
 "use client";
 
 import { Button } from "@/shared/components/ui/button";
-import { useChatsStore } from "@/entities/chats";
+import { IChatById, useChatsStore } from "@/entities/chats";
 import { IChatsList } from "@/entities/chats/types/chatsTypes";
 import { ModalLayout } from "@/shared/layouts/ModalLayout/ModalLayout";
 import * as React from "react";
 
 interface Props {
-	chat: IChatsList;
+	chat: IChatsList | IChatById;
 	open: boolean;
 	onOpenChange: (val: boolean) => void;
 }

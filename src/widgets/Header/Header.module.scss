@@ -3,6 +3,10 @@
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-card);
 
+  @media (max-width: 768px) {
+    height: var(--header-modile-height);
+  }
+
   .container {
     margin: 0 auto;
     padding: 0 2rem;

@@ -31,7 +31,7 @@ interface AiState {
 	clearError: () => void;
 }
 
-export const useAiStore = create<AiState>((set, get) => ({
+export const useAiStore = create<AiState>((set) => ({
 	ai: null,
 	response: null,
 	loading: false,

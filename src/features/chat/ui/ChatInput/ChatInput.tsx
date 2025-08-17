@@ -23,8 +23,6 @@ export const ChatInput = () => {
 
 	const canAddMoreFiles = codeFiles.length < 5;
 
-	if (!ai) return null;
-
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if ((message.trim() || codeFiles.length > 0) && !loading && chatById) {
@@ -46,17 +44,19 @@ export const ChatInput = () => {
 					fullPrompt = userMessage + codeContext;
 				}
 
-				await sendReqToAi(
-					{
-						prompt: fullPrompt,
-						chatId: chatById.id,
-						aiProvider: ai,
-					},
-					{
-						addRequest,
-						updateRequestResponse,
-					},
-				);
+				if (ai) {
+					await sendReqToAi(
+						{
+							prompt: fullPrompt,
+							chatId: chatById.id,
+							aiProvider: ai,
+						},
+						{
+							addRequest,
+							updateRequestResponse,
+						},
+					);
+				}
 			} catch (error) {
 				console.error("Ошибка при отправке сообщения:", error);
 				setMessage(userMessage);
@@ -64,6 +64,12 @@ export const ChatInput = () => {
 			}
 		}
 	};
+
+	const { handleKeyDown } = useEnterSubmit({
+		onSubmit: handleSubmit,
+		disabled: loading,
+		shouldSubmit: !!(message.trim() || codeFiles.length > 0),
+	});
 
 	const handleAddCodeFile = (file: CodeFile) => {
 		if (editingFile) {
@@ -89,12 +95,6 @@ export const ChatInput = () => {
 		setEditingFile(null);
 		setIsCodeModalOpen(true);
 	};
-
-	const { handleKeyDown } = useEnterSubmit({
-		onSubmit: handleSubmit,
-		disabled: loading,
-		shouldSubmit: !!(message.trim() || codeFiles.length > 0),
-	});
 
 	if (!ai) return null;
 

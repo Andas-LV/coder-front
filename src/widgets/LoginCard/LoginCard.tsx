@@ -1,7 +1,5 @@
 import React from "react";
 import { signIn } from "next-auth/react";
-import { FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import styles from "./LoginCard.module.scss";
 import { routes } from "@/core/config/routes";
 import { getProviderIcon } from "@/shared/utils/authProviders";
@@ -14,7 +12,7 @@ export const LoginCard = () => {
 			toast.success("Вы успешно вошли в аккаунта", {
 				position: "top-center",
 			});
-		} catch (e) {
+		} catch {
 			toast.error("Что-то пошло не так", {
 				position: "bottom-center",
 			});

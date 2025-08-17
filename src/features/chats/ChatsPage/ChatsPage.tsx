@@ -12,10 +12,13 @@ import {
 	ResizablePanelGroup,
 } from "@/shared/components/ui/resizable";
 import { useChatsStore } from "@/entities/chats";
+import useIsMobile from "@/shared/hooks/useIsMobile";
 
 export default function ChatsPageComponent() {
 	const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 	const { chats, getChats } = useChatsStore();
+	const isMobile = useIsMobile();
+	const [isChatOpen, setIsChatOpen] = useState(false);
 
 	useEffect(() => {
 		getChats();
@@ -23,7 +26,35 @@ export default function ChatsPageComponent() {
 
 	const handleChatSelect = (chatId: string) => {
 		setSelectedChatId(chatId);
+		if (isMobile) {
+			setIsChatOpen(true);
+		}
 	};
+
+	const handleBack = () => {
+		setIsChatOpen(false);
+		setSelectedChatId(null);
+	};
+
+	if (isMobile) {
+		return (
+			<div className={styles.chatsPage}>
+				{isChatOpen && selectedChatId ? (
+					<div className={styles.mainContent}>
+						<CurrentChat chatId={selectedChatId} onBack={handleBack} />
+					</div>
+				) : (
+					<div className={styles.sidebar}>
+						<ChatsSidebar
+							chats={chats}
+							selectedChatId={selectedChatId}
+							onChatSelect={handleChatSelect}
+						/>
+					</div>
+				)}
+			</div>
+		);
+	}
 
 	return (
 		<div className={styles.chatsPage}>

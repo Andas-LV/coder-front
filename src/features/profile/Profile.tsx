@@ -8,12 +8,12 @@ import ProfileInfo from "@/features/profile/ui/ProfileInfo/ProfileInfo";
 import ProfileInfoSkeleton from "@/features/profile/ui/ProfileInfoSkeleton/ProfileInfoSkeleton";
 
 export default function Profile() {
-	const { data: session, status } = useSession();
+	const { status } = useSession();
 	const { profile, getProfile, loading } = useProfileStore();
 
 	useEffect(() => {
 		getProfile();
-	}, []);
+	}, [getProfile]);
 
 	if (status === "loading" || loading) {
 		return <ProfileInfoSkeleton />;

@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -7,20 +8,27 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { Button } from "@/shared/components/ui/button";
 import { MoreVertical } from "lucide-react";
-import { IChatsList } from "@/entities/chats/types/chatsTypes";
+import { IChatById, IChatsList } from "@/entities/chats/types/chatsTypes";
 import styles from "../ChatItem/ChatItem.module.scss";
 import { RenameChatModal } from "@/widgets/ChatsSidebar/modals/RenameChatModal";
 import { DeleteChatModal } from "@/widgets/ChatsSidebar/modals/DeleteChatModal";
-import * as React from "react";
-import { useState } from "react";
+import { useModal } from "@/shared/hooks/useModal";
 
 interface Props {
-	chat: IChatsList;
+	chat: IChatsList | IChatById;
 }
 
 export const ChatItemMenu = ({ chat }: Props) => {
-	const [renameOpen, setRenameOpen] = useState(false);
-	const [deleteOpen, setDeleteOpen] = useState(false);
+	const {
+		modalData: renameModalData,
+		openModal: openRenameModal,
+		closeModal: closeRenameModal,
+	} = useModal<IChatsList | IChatById>();
+	const {
+		modalData: deleteModalData,
+		openModal: openDeleteModal,
+		closeModal: closeDeleteModal,
+	} = useModal<IChatsList | IChatById>();
 
 	return (
 		<>
@@ -39,7 +47,7 @@ export const ChatItemMenu = ({ chat }: Props) => {
 					<DropdownMenuItem
 						onClick={(e) => {
 							e.stopPropagation();
-							setRenameOpen(true);
+							openRenameModal(chat);
 						}}
 					>
 						Переименовать
@@ -47,7 +55,7 @@ export const ChatItemMenu = ({ chat }: Props) => {
 					<DropdownMenuItem
 						onClick={(e) => {
 							e.stopPropagation();
-							setDeleteOpen(true);
+							openDeleteModal(chat);
 						}}
 						className="text-red-600"
 					>
@@ -56,16 +64,20 @@ export const ChatItemMenu = ({ chat }: Props) => {
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			<RenameChatModal
-				chat={chat}
-				open={renameOpen}
-				onOpenChange={setRenameOpen}
-			/>
-			<DeleteChatModal
-				chat={chat}
-				open={deleteOpen}
-				onOpenChange={setDeleteOpen}
-			/>
+			{renameModalData && (
+				<RenameChatModal
+					chat={renameModalData}
+					open={!!renameModalData}
+					onOpenChange={closeRenameModal}
+				/>
+			)}
+			{deleteModalData && (
+				<DeleteChatModal
+					chat={deleteModalData}
+					open={!!deleteModalData}
+					onOpenChange={closeDeleteModal}
+				/>
+			)}
 		</>
 	);
 };
