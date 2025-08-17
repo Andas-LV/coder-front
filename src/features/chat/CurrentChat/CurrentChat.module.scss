@@ -8,7 +8,7 @@
 @media (max-width: 768px) {
 	.aiPage {
 		height: calc(
-			100vh - (var(--header-modile-height) + var(--chat-input-height))
+			100dvh - (var(--header-modile-height) + var(--chat-input-height))
 		);
 	}
 }
