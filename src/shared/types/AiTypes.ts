@@ -1,1 +1,1 @@
-export type AiTypes = "gemini" | "deepseek" | "chatgpt" | "claude" | "llama";
+export type AiTypes = "gemini" | "deepseek";

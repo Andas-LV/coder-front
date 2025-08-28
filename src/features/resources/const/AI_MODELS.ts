@@ -31,39 +31,4 @@ export const AI_MODELS_DATA: AIModelData[] = [
 		iconType: "brain",
 		color: "#6366f1",
 	},
-	{
-		id: "chatgpt",
-		name: "ChatGPT",
-		company: "OpenAI",
-		description:
-			"Популярная языковая модель для общения, творчества и решения различных задач",
-		features: ["Диалоги", "Творчество", "Обучение", "Помощь в работе"],
-		iconType: "openai",
-		color: "#10a37f",
-	},
-	{
-		id: "claude",
-		name: "Claude",
-		company: "Anthropic",
-		description:
-			"ИИ-ассистент с акцентом на безопасность и полезность в различных задачах",
-		features: ["Безопасность", "Анализ документов", "Творчество", "Этичность"],
-		iconType: "sparkles",
-		color: "#ff6b35",
-	},
-	{
-		id: "llama",
-		name: "Llama",
-		company: "Meta",
-		description:
-			"Открытая языковая модель с возможностью локального развертывания",
-		features: [
-			"Open Source",
-			"Локальное развертывание",
-			"Кастомизация",
-			"Исследования",
-		],
-		iconType: "meta",
-		color: "#1877f2",
-	},
 ];

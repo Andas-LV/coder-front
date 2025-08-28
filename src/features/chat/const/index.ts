@@ -16,25 +16,4 @@ export const AI_INFO = {
 		icon: Brain,
 		description: "Продвинутая модель для рассуждений",
 	},
-	chatgpt: {
-		name: "ChatGPT",
-		company: "OpenAI",
-		color: "#10a37f",
-		icon: SiOpenai,
-		description: "Популярная языковая модель",
-	},
-	claude: {
-		name: "Claude",
-		company: "Anthropic",
-		color: "#ff6b35",
-		icon: Sparkles,
-		description: "ИИ-ассистент с фокусом на безопасность",
-	},
-	llama: {
-		name: "Llama",
-		company: "Meta",
-		color: "#1877f2",
-		icon: SiMeta,
-		description: "Открытая языковая модель",
-	},
 } as const;
