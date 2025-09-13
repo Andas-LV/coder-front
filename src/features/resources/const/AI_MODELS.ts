@@ -31,4 +31,19 @@ export const AI_MODELS_DATA: AIModelData[] = [
 		iconType: "brain",
 		color: "#6366f1",
 	},
+	{
+		id: "llama",
+		name: "LLaMA",
+		company: "Meta AI",
+		description:
+			"Семейство моделей от Meta, оптимизированное для генерации текста, анализа данных и диалоговых систем",
+		features: [
+			"Быстрая генерация текста",
+			"Диалоговые системы",
+			"Программирование",
+			"Аналитика",
+		],
+		iconType: "meta",
+		color: "#1d4ed8",
+	},
 ];
