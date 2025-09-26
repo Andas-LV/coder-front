@@ -88,7 +88,7 @@ export const AuthSection = ({
 						</Link>
 
 						{isMobile && (
-							<div className={styles.dropdownItem}>
+							<div onClick={() => setIsQRScannerOpen(true)} className={styles.dropdownItem}>
 								<QrCodeIcon />
 								<span>Сканировать QR</span>
 							</div>
