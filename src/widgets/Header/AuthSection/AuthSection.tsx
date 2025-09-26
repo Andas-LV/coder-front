@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./AuthSection.module.scss";
 import Link from "next/link";
-import { LogOut, Settings, User } from "lucide-react";
+import { LogOut, Settings, User, QrCodeIcon } from "lucide-react";
 import { signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -9,6 +9,8 @@ import { routes } from "@/core/config/routes";
 import type { Session } from "next-auth";
 import { Avatar } from "@/shared/components/Avatar/Avatar";
 import { ThemeToggle } from "@/widgets/ThemeToggle/ThemeToggle";
+import { isMobile } from "react-device-detect";
+import { QRScanner } from "@/widgets/QRScanner";
 
 interface AuthSectionProps {
 	session: Session | null;
@@ -24,6 +26,8 @@ export const AuthSection = ({
 	toggleDropdown,
 }: AuthSectionProps) => {
 	const router = useRouter();
+
+	const [isQRScannerOpen, setIsQRScannerOpen] = useState(false)
 
 	const handleLogout = async () => {
 		try {
@@ -83,6 +87,13 @@ export const AuthSection = ({
 							<span>Настройки</span>
 						</Link>
 
+						{isMobile && (
+							<div className={styles.dropdownItem}>
+								<QrCodeIcon />
+								<span>Сканировать QR</span>
+							</div>
+						)}
+
 						<div className={styles.separator} />
 
 						<button className={styles.dropdownItem} onClick={handleLogout}>
@@ -97,6 +108,12 @@ export const AuthSection = ({
 					<span className={styles.buttonContent}>Войти</span>
 				</button>
 			)}
+
+			<QRScanner
+				isOpen={isQRScannerOpen}
+				onClose={() => setIsQRScannerOpen(false)}
+				onTokenExtracted={(token) => alert(token)}
+			/>
 		</div>
 	);
 };

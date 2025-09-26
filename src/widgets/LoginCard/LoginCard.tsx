@@ -4,6 +4,7 @@ import styles from "./LoginCard.module.scss";
 import { routes } from "@/core/config/routes";
 import { getProviderIcon } from "@/shared/utils/authProviders";
 import { toast } from "sonner";
+import { ShowQr } from "@/widgets/ShowQr/ShowQr";
 
 export const LoginCard = () => {
 	const handleSignIn = async (provider: string) => {
@@ -45,9 +46,11 @@ export const LoginCard = () => {
 					</button>
 				</div>
 
-				<div className={styles.footer}>
-					<p>Нет аккаунта? Войдите через один из сервисов выше</p>
+				<div className={styles.or}>
+					<p>или по QR</p>
 				</div>
+
+				<ShowQr />
 			</div>
 		</div>
 	);
