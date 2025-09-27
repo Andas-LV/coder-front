@@ -3,6 +3,6 @@ export interface ICreatedQr {
 }
 
 export interface IApproveQr {
-	qrCode: string;
+	userId: string;
 	token: string;
 }

@@ -7,6 +7,7 @@ interface QrState {
 	loading: boolean;
 	error: string | null;
 	getQr: () => Promise<void>;
+	approveQr: (payload: IApproveQr) => Promise<void>;
 }
 
 export const useQrStore = create<QrState>((set) => ({
@@ -18,6 +19,16 @@ export const useQrStore = create<QrState>((set) => ({
 		set({ loading: true, error: null });
 		try {
 			const result = await service.createQr();
+			set({ createdQr: result, loading: false });
+		} catch (err) {
+			set({ error: (err as Error).message, loading: false });
+		}
+	},
+
+	approveQr: async (payload) => {
+		set({ loading: true, error: null });
+		try {
+			const result = await service.approveQr(payload);
 			set({ createdQr: result, loading: false });
 		} catch (err) {
 			set({ error: (err as Error).message, loading: false });

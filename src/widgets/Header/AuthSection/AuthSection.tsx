@@ -10,7 +10,7 @@ import type { Session } from "next-auth";
 import { Avatar } from "@/shared/components/Avatar/Avatar";
 import { ThemeToggle } from "@/widgets/ThemeToggle/ThemeToggle";
 import { isMobile } from "react-device-detect";
-import { QRScanner } from "@/widgets/QRScanner";
+import { QrScanner } from "@/widgets/QrScanner";
 
 interface AuthSectionProps {
 	session: Session | null;
@@ -27,7 +27,7 @@ export const AuthSection = ({
 }: AuthSectionProps) => {
 	const router = useRouter();
 
-	const [isQRScannerOpen, setIsQRScannerOpen] = useState(false)
+	const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
 
 	const handleLogout = async () => {
 		try {
@@ -88,7 +88,10 @@ export const AuthSection = ({
 						</Link>
 
 						{isMobile && (
-							<div onClick={() => setIsQRScannerOpen(true)} className={styles.dropdownItem}>
+							<div
+								onClick={() => setIsQRScannerOpen(true)}
+								className={styles.dropdownItem}
+							>
 								<QrCodeIcon />
 								<span>Сканировать QR</span>
 							</div>
@@ -109,11 +112,9 @@ export const AuthSection = ({
 				</button>
 			)}
 
-			<QRScanner
-				isOpen={isQRScannerOpen}
-				onClose={() => setIsQRScannerOpen(false)}
-				onTokenExtracted={(token) => alert(token)}
-			/>
+			{isQRScannerOpen && (
+				<QrScanner onClose={() => setIsQRScannerOpen(false)} />
+			)}
 		</div>
 	);
 };
