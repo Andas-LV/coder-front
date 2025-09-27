@@ -3,6 +3,9 @@ import { useQrStore } from "@/features/qr";
 import QRCode from "react-qr-code";
 import { useSocket } from "@/shared/hooks/useSocket";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { signIn } from "next-auth/react";
+import { routes } from "@/core/config/routes";
+import { toast } from "sonner";
 
 export const ShowQr = () => {
 	const { getQr, createdQr, loading } = useQrStore();
@@ -16,8 +19,8 @@ export const ShowQr = () => {
 	useEffect(() => {
 		if (!socket) return;
 
-		socket.on("message", (msg: any) => {
-			console.log("Получено сообщение:", msg);
+		socket.on("message", async (msg: any) => {
+			console.log(msg);
 		});
 
 		return () => {

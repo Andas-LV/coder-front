@@ -25,7 +25,6 @@ export const QrScanner: React.FC<QrScannerProps> = ({ onClose }) => {
 	const handleApprove = async (token: string) => {
 		if (!session?.user?.id) return;
 
-		// защита от повторного вызова
 		if (lastScanned.current === token || isProcessing) return;
 		lastScanned.current = token;
 		setIsProcessing(true);
@@ -55,7 +54,7 @@ export const QrScanner: React.FC<QrScannerProps> = ({ onClose }) => {
 
 				<div className="flex-1 rounded-xl overflow-hidden border relative">
 					<QrReader
-						constraints={{ facingMode: "environment" }}
+						constraints={{ facingMode: "environment" }} // задняя камера
 						onResult={(result, error) => {
 							if (result) {
 								const token = result.getText();
@@ -65,8 +64,14 @@ export const QrScanner: React.FC<QrScannerProps> = ({ onClose }) => {
 								console.warn("QR Error:", error.message);
 							}
 						}}
-						className="w-full h-full"
+						className="w-full h-full object-cover"
 					/>
+
+					{/* Оверлей для UX */}
+					<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+						<div className="border-4 border-green-500 rounded-lg w-40 h-40" />
+					</div>
+
 					{isProcessing && (
 						<div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white font-semibold">
 							Обработка...
