@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
-import CredentialsProvider from "next-auth/providers/credentials"
+import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 import axiosInstance from "@/shared/api/axiosInstance";
 import { routes } from "@/core/config/routes";
@@ -18,39 +18,17 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: process.env.GITHUB_SECRET!,
 		}),
 		CredentialsProvider({
-			id: "credentials",
 			name: "QR Login",
 			credentials: {
-				userData: { label: "User Data", type: "text" },
+				user: { label: "User", type: "text" },
 			},
-			async authorize(credentials, req) {
-				console.log("[v0] Credentials authorize called:", credentials)
-
-				if (!credentials?.userData) {
-					console.log("[v0] No userData provided")
-					return null
-				}
-
+			async authorize(credentials) {
+				if (!credentials?.user) return null;
 				try {
-					const userData = JSON.parse(credentials.userData)
-					console.log("[v0] Parsed userData:", userData)
-
-					if (userData && userData.type === "login" && userData.user) {
-						const user = userData.user
-						return {
-							id: user.id,
-							email: user.email,
-							name: user.name,
-							image: user.image,
-							provider: user.provider,
-							providerId: user.providerId,
-						}
-					}
-				} catch (error) {
-					console.error("[v0] Error parsing userData:", error)
+					return JSON.parse(credentials.user);
+				} catch {
+					return null;
 				}
-
-				return null
 			},
 		}),
 	],

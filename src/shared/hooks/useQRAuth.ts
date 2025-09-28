@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { QRAuthData } from "@/features/qr";
+import { QRAuthData } from "@/entities/qr";
 
 export function useQRAuth() {
 	const [isLoading, setIsLoading] = useState(false)

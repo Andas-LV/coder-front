@@ -3,11 +3,13 @@ import { SignJWT } from "jose"
 
 export async function POST(request: NextRequest) {
 	try {
-		const { user } = await request.json()
+		const { sessionId, user } = await request.json()
 
-		if (!user) {
-			return NextResponse.json({ error: "Invalid user data" }, { status: 400 })
+		if (!sessionId || !user) {
+			return NextResponse.json({ error: "Session ID and user data required" }, { status: 400 })
 		}
+
+		console.log("[v0] QR signin request:", { sessionId, user })
 
 		const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!)
 
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest) {
 
 		return response
 	} catch (error) {
-		console.error("QR signin error:", error)
+		console.error("[v0] QR signin error:", error)
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 })
 	}
 }

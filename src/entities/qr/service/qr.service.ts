@@ -1,5 +1,5 @@
 import axiosInstance from "@/shared/api/axiosInstance";
-import { ICreatedQr, IApproveQr, QRAuthData } from "@/features/qr";
+import { ICreatedQr, IApproveQr, QRAuthData } from "@/entities/qr";
 
 export async function createQr(): Promise<ICreatedQr> {
 	const { data } = await axiosInstance.post("/qr-login/");

@@ -4,13 +4,13 @@ import styles from "./LoginCard.module.scss";
 import { routes } from "@/core/config/routes";
 import { getProviderIcon } from "@/shared/utils/authProviders";
 import { toast } from "sonner";
-import { ShowQr } from "@/widgets/ShowQr/ShowQr";
+import { ShowQr } from "@/features/qr/ui/ShowQr/ShowQr";
 
 export const LoginCard = () => {
 	const handleSignIn = async (provider: string) => {
 		try {
 			await signIn(provider, { callbackUrl: routes.home(), redirect: true });
-			toast.success("Вы успешно вошли в аккаунта", {
+			toast.success("Вы успешно вошли в аккаунт", {
 				position: "top-center",
 			});
 		} catch {

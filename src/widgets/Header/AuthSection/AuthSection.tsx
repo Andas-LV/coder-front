@@ -10,7 +10,7 @@ import type { Session } from "next-auth";
 import { Avatar } from "@/shared/components/Avatar/Avatar";
 import { ThemeToggle } from "@/widgets/ThemeToggle/ThemeToggle";
 import { isMobile } from "react-device-detect";
-import { QrScanner } from "@/widgets/QrScanner";
+import { QrScanner } from "@/features/qr/ui/QrScanner";
 
 interface AuthSectionProps {
 	session: Session | null;

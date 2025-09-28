@@ -1,32 +1,34 @@
 import React, { useEffect } from "react";
-import { useQrStore } from "@/features/qr";
+import { QRAuthData, useQrStore } from "@/entities/qr";
 import QRCode from "react-qr-code";
 import { useSocket } from "@/shared/hooks/useSocket";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { routes } from "@/core/config/routes";
-import { toast } from "sonner";
+import { handleQrLogin } from "@/features/qr/utils/handleQrLogin";
 
 export const ShowQr = () => {
 	const { getQr, createdQr, loading } = useQrStore();
+	const router = useRouter();
 
 	useEffect(() => {
 		getQr();
 	}, [getQr]);
 
-	const { socket, connected } = useSocket(createdQr?.token || "");
+	const { socket } = useSocket(createdQr?.token || "");
 
 	useEffect(() => {
 		if (!socket) return;
 
-		socket.on("message", async (msg: any) => {
-			console.log(msg);
+		socket.on("message", async (msg: QRAuthData) => {
+			await handleQrLogin(msg.user);
+			router.push(routes.home());
 		});
 
 		return () => {
 			socket?.off("message");
 		};
-	}, [socket]);
+	}, [socket, router]);
 
 	if (loading) return <Skeleton className="w-64 h-64 rounded-2xl" />;
 	if (!createdQr) return <Skeleton className="w-64 h-64 rounded-2xl" />;
