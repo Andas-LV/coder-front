@@ -30,8 +30,12 @@ export const ShowQr = () => {
 		};
 	}, [socket, router]);
 
-	if (loading) return <Skeleton className="w-64 h-64 rounded-2xl" />;
-	if (!createdQr) return <Skeleton className="w-64 h-64 rounded-2xl" />;
+	if (loading || !createdQr)
+		return (
+			<div className="flex flex-col items-center gap-4 rounded-2xl p-4">
+				<Skeleton className="w-64 h-64 rounded-2xl pulse" />
+			</div>
+		);
 
 	return (
 		<div className="flex flex-col items-center gap-4 bg-white rounded-2xl p-4">
