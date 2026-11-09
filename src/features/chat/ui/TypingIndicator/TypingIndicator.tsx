@@ -1,25 +1,24 @@
 "use client";
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import styles from "./TypingIndicator.module.scss";
-import { AI_INFO } from "../../const";
-import { AiTypes } from "@/shared/types/AiTypes";
+import { getModelInfo } from "@/entities/models";
 
 interface TypingIndicatorProps {
-	ai: AiTypes;
+	model: string | null;
 }
 
-export const TypingIndicator = ({ ai }: TypingIndicatorProps) => {
-	const aiInfo = AI_INFO[ai];
-	const IconComponent = aiInfo.icon;
+export const TypingIndicator = ({ model }: TypingIndicatorProps) => {
+	const info = getModelInfo(model);
+	const IconComponent = info.icon;
 
 	return (
 		<div className={styles.messageContainer}>
 			<div className={styles.messageContent}>
 				<Avatar className={styles.messageAvatar}>
-					<AvatarFallback style={{ backgroundColor: `${aiInfo.color}15` }}>
+					<AvatarFallback style={{ backgroundColor: `${info.color}15` }}>
 						<IconComponent
 							className={styles.avatarIcon}
-							style={{ color: aiInfo.color }}
+							style={{ color: info.color }}
 						/>
 					</AvatarFallback>
 				</Avatar>

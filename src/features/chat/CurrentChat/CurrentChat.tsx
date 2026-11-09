@@ -19,8 +19,10 @@ interface CurrentChatProps {
 export const CurrentChat = ({ chatId, onBack }: CurrentChatProps) => {
 	const isMobile = useIsMobile();
 
-	const { setAiState } = useAiStore();
-	const { chatById, getChatById, loading } = useChatsStore();
+	const { setModel } = useAiStore();
+	const { chatById, getChatById } = useChatsStore();
+	const lastResponse = chatById?.requests.at(-1)?.response;
+	const requestsCount = chatById?.requests.length ?? 0;
 
 	const scrollAreaRef = useRef<HTMLDivElement>(null);
 	const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(
@@ -36,22 +38,27 @@ export const CurrentChat = ({ chatId, onBack }: CurrentChatProps) => {
 		}
 	}, []);
 
+	// Новое сообщение — всегда вниз
 	useEffect(() => {
-		if (scrollContainer && loading) {
-			const timer = setTimeout(() => {
-				scrollContainer.scrollTo({
-					top: scrollContainer.scrollHeight,
-					behavior: "smooth",
-				});
-			}, 100);
+		if (!scrollContainer) return;
+		const timer = setTimeout(() => {
+			scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: "smooth" });
+		}, 50);
+		return () => clearTimeout(timer);
+	}, [requestsCount, chatById?.id, scrollContainer]);
 
-			return () => clearTimeout(timer);
+	// Стриминг — прокручиваем, только если пользователь и так внизу
+	useEffect(() => {
+		if (!scrollContainer) return;
+		const { scrollHeight, scrollTop, clientHeight } = scrollContainer;
+		if (scrollHeight - scrollTop - clientHeight < 160) {
+			scrollContainer.scrollTop = scrollHeight;
 		}
-	}, [loading, scrollContainer]);
+	}, [lastResponse, scrollContainer]);
 
 	useEffect(() => {
-		setAiState(chatById?.aiProvider || null);
-	}, [chatById, setAiState]);
+		setModel(chatById?.model ?? null);
+	}, [chatById?.model, setModel]);
 
 	useEffect(() => {
 		if (chatId) {

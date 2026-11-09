@@ -1,12 +1,17 @@
 import { create } from "zustand";
 import * as service from "@/entities/profile/service/profile.service";
 import type { IProfile } from "@/entities/profile/types/profileTypes";
+import { getErrorMessage } from "@/shared/api/errors";
 
 interface ProfileState {
 	profile: IProfile | null;
 	loading: boolean;
 	error: string | null;
-	getProfile: () => Promise<void>;
+	/**
+	 * Берёт профиль с бэкенда (GET /account/me). Если эндпоинта нет или он упал,
+	 * используем `fallback` (данные из сессии NextAuth), чтобы страница работала.
+	 */
+	getProfile: (fallback?: IProfile | null) => Promise<void>;
 }
 
 export const useProfileStore = create<ProfileState>((set) => ({
@@ -14,13 +19,17 @@ export const useProfileStore = create<ProfileState>((set) => ({
 	loading: false,
 	error: null,
 
-	getProfile: async () => {
+	getProfile: async (fallback) => {
 		set({ loading: true, error: null });
 		try {
 			const result = await service.fetchProfile();
-			set({ profile: result, loading: false });
+			set({ profile: { ...fallback, ...result }, loading: false });
 		} catch (err) {
-			set({ error: (err as Error).message, loading: false });
+			set({
+				profile: fallback ?? null,
+				error: getErrorMessage(err),
+				loading: false,
+			});
 		}
 	},
 }));

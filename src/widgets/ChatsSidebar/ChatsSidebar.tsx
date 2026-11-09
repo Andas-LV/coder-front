@@ -26,7 +26,8 @@ export const ChatsSidebar = ({
 
 	const filteredChats =
 		chats?.filter((chat) =>
-			chat.name.toLowerCase().includes(searchQuery.toLowerCase()),
+			chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				(chat.model ?? "").toLowerCase().includes(searchQuery.toLowerCase()),
 		) || [];
 
 	return (
@@ -35,7 +36,7 @@ export const ChatsSidebar = ({
 			<SearchInput value={searchQuery} onChange={setSearchQuery} />
 
 			<ScrollArea className={styles.chatsList}>
-				{loading ? (
+				{loading && !chats ? (
 					<div className={styles.loading}>
 						<div className={styles.spinner} />
 						<span>Загрузка чатов...</span>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import type React from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { Send, Mic, FilePlus } from "lucide-react";
+import { Send, Mic, FilePlus, Square } from "lucide-react";
 import styles from "./ChatInput.module.scss";
 import { useAiStore } from "@/entities/ai";
 import { useChatsStore } from "@/entities/chats";
@@ -14,8 +14,8 @@ import { CodeFilePreview } from "../CodeFile/CodeFilePreview/CodeFilePreview";
 import { CodeFile } from "@/features/chat/ui/CodeFile/types";
 
 export const ChatInput = () => {
-	const { ai, loading, sendReqToAi } = useAiStore();
-	const { chatById, addRequest, updateRequestResponse } = useChatsStore();
+	const { loading, sendReqToAi, stop } = useAiStore();
+	const { chatById } = useChatsStore();
 	const [message, setMessage] = useState("");
 	const [codeFiles, setCodeFiles] = useState<CodeFile[]>([]);
 	const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
@@ -25,44 +25,26 @@ export const ChatInput = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if ((message.trim() || codeFiles.length > 0) && !loading && chatById) {
-			const userMessage = message.trim();
-			const filesToSend = [...codeFiles];
+		if (!(message.trim() || codeFiles.length > 0) || loading || !chatById) return;
 
-			setMessage("");
-			setCodeFiles([]);
+		const userMessage = message.trim();
+		const filesToSend = [...codeFiles];
 
-			try {
-				let fullPrompt = userMessage;
-				if (filesToSend.length > 0) {
-					const codeContext = filesToSend
-						.map(
-							(file) =>
-								`\n\n**${file.name}** (${file.language}):\n\`\`\`${file.language}\n${file.content}\n\`\`\``,
-						)
-						.join("");
-					fullPrompt = userMessage + codeContext;
-				}
+		setMessage("");
+		setCodeFiles([]);
 
-				if (ai) {
-					await sendReqToAi(
-						{
-							prompt: fullPrompt,
-							chatId: chatById.id,
-							aiProvider: ai,
-						},
-						{
-							addRequest,
-							updateRequestResponse,
-						},
-					);
-				}
-			} catch (error) {
-				console.error("Ошибка при отправке сообщения:", error);
-				setMessage(userMessage);
-				setCodeFiles(filesToSend);
-			}
+		let fullPrompt = userMessage;
+		if (filesToSend.length > 0) {
+			const codeContext = filesToSend
+				.map(
+					(file) =>
+						`\n\n**${file.name}** (${file.language}):\n\`\`\`${file.language}\n${file.content}\n\`\`\``,
+				)
+				.join("");
+			fullPrompt = userMessage + codeContext;
 		}
+
+		await sendReqToAi({ chatId: chatById.id, content: fullPrompt });
 	};
 
 	const { handleKeyDown } = useEnterSubmit({
@@ -96,7 +78,7 @@ export const ChatInput = () => {
 		setIsCodeModalOpen(true);
 	};
 
-	if (!ai) return null;
+	if (!chatById) return null;
 
 	return (
 		<div className={styles.chatInput}>
@@ -145,13 +127,24 @@ export const ChatInput = () => {
 						<Mic className={styles.inputIcon} />
 					</Button>
 
-					<Button
-						type="submit"
-						disabled={!(message.trim() || codeFiles.length > 0) || loading}
-						className={styles.sendButton}
-					>
-						<Send className={styles.sendIcon} />
-					</Button>
+					{loading ? (
+						<Button
+							type="button"
+							onClick={stop}
+							className={styles.sendButton}
+							title="Остановить генерацию"
+						>
+							<Square className={styles.sendIcon} />
+						</Button>
+					) : (
+						<Button
+							type="submit"
+							disabled={!(message.trim() || codeFiles.length > 0)}
+							className={styles.sendButton}
+						>
+							<Send className={styles.sendIcon} />
+						</Button>
+					)}
 				</div>
 			</form>
 

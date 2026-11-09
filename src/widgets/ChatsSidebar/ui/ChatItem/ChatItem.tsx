@@ -3,9 +3,9 @@
 import { Badge } from "@/shared/components/ui/badge";
 import { formatDate } from "../../utils/formatDate";
 import { IChatsList } from "@/entities/chats/types/chatsTypes";
+import { getModelInfo, useModelsStore } from "@/entities/models";
 import { ChatItemMenu } from "../ChatItemMenu/ChatItemMenu";
 import styles from "./ChatItem.module.scss";
-import { getModelById } from "@/shared/utils/authProviders";
 
 interface Props {
 	chat: IChatsList;
@@ -14,7 +14,8 @@ interface Props {
 }
 
 export const ChatItem = ({ chat, selected, onSelect }: Props) => {
-	const model = getModelById(chat.aiProvider);
+	const defaultModel = useModelsStore((s) => s.defaultModel);
+	const info = getModelInfo(chat.model ?? defaultModel);
 
 	return (
 		<div
@@ -23,7 +24,7 @@ export const ChatItem = ({ chat, selected, onSelect }: Props) => {
 		>
 			<div className={styles.chatContent}>
 				<div className={styles.chatHeader}>
-					<h3 className={styles.chatName}>{chat.name}</h3>
+					<h3 className={styles.chatName}>{chat.title}</h3>
 					<ChatItemMenu chat={chat} />
 				</div>
 
@@ -31,9 +32,9 @@ export const ChatItem = ({ chat, selected, onSelect }: Props) => {
 					<Badge
 						variant="default"
 						className={styles.aiProviderBadge}
-						style={{ backgroundColor: model?.color ?? "var(--color-accent)" }}
+						style={{ backgroundColor: info.color }}
 					>
-						{chat.aiProvider}
+						{info.name}
 					</Badge>
 					<span className={styles.chatDate}>{formatDate(chat.updatedAt)}</span>
 				</div>

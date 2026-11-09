@@ -13,16 +13,37 @@ import {
 } from "@/shared/components/ui/resizable";
 import { useChatsStore } from "@/entities/chats";
 import useIsMobile from "@/shared/hooks/useIsMobile";
+import { useModelsStore } from "@/entities/models";
 
 export default function ChatsPageComponent() {
 	const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-	const { chats, getChats } = useChatsStore();
+	const { chats, getChats, clearChat } = useChatsStore();
+	const loadModels = useModelsStore((s) => s.load);
 	const isMobile = useIsMobile();
 	const [isChatOpen, setIsChatOpen] = useState(false);
 
 	useEffect(() => {
 		getChats();
-	}, [getChats]);
+		// список моделей грузим один раз (первый запрос к бэкенду может идти ~7 с)
+		loadModels();
+	}, [getChats, loadModels]);
+
+	// /chats?chat=<id> — открыть конкретный чат (например, со страницы ресурсов)
+	useEffect(() => {
+		const id = new URLSearchParams(window.location.search).get("chat");
+		if (id) {
+			setSelectedChatId(id);
+			setIsChatOpen(true);
+		}
+	}, []);
+
+	// чат удалён — сбрасываем выбор
+	useEffect(() => {
+		if (selectedChatId && chats && !chats.some((c) => c.id === selectedChatId)) {
+			setSelectedChatId(null);
+			setIsChatOpen(false);
+		}
+	}, [chats, selectedChatId]);
 
 	const handleChatSelect = (chatId: string) => {
 		setSelectedChatId(chatId);
@@ -34,6 +55,7 @@ export default function ChatsPageComponent() {
 	const handleBack = () => {
 		setIsChatOpen(false);
 		setSelectedChatId(null);
+		clearChat();
 	};
 
 	if (isMobile) {

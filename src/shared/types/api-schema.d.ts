@@ -4,34 +4,15 @@
  */
 
 export interface paths {
-    "/account/me": {
+    "/health": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get current user */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["User"];
-                    };
-                };
-            };
-        };
+        /** Health */
+        get: operations["health_health_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -40,157 +21,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/ai/gemini": {
+    "/chats": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List Chats */
+        get: operations["list_chats_chats_get"];
         put?: never;
-        /** Send a request to Gemini */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AiRequest"];
-                };
-            };
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AiResponse"];
-                    };
-                };
-            };
-        };
+        /** Create Chat */
+        post: operations["create_chat_chats_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/ai/deepSeek": {
+    "/chats/{chat_id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Send a request to DeepSeek */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AiRequest"];
-                };
-            };
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AiResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/chats/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create a new chat */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        /** @enum {string} */
-                        aiProvider?: "gemini" | "deepseek";
-                    };
-                };
-            };
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Chat"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/chats/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all chats for a user */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Chat"][];
-                    };
-                };
-            };
-        };
+        /** Get Chat */
+        get: operations["get_chat_chats__chat_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -199,45 +56,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/chats/{id}": {
+    "/chats/{chat_id}/messages": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get a chat by ID */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Chat"];
-                    };
-                };
-            };
-        };
+        get?: never;
         put?: never;
-        post?: never;
+        /** Send Message */
+        post: operations["send_message_chats__chat_id__messages_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/chats/{id}/update": {
+    "/chats/{chat_id}/messages/stream": {
         parameters: {
             query?: never;
             header?: never;
@@ -246,120 +82,29 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        /** Stream Message */
+        post: operations["stream_message_chats__chat_id__messages_stream_post"];
         delete?: never;
-        options?: never;
-        head?: never;
-        /** Update a chat's name */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": {
-                        name?: string;
-                    };
-                };
-            };
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Chat"];
-                    };
-                };
-            };
-        };
-        trace?: never;
-    };
-    "/chats/{id}/delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete a chat by ID */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Successful response */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/users/sync": {
+    "/models": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List Free Models
+         * @description Free chat models available right now. Cached (see MODELS_CACHE_TTL_SECONDS);
+         *     pass ?refresh=true to re-probe.
+         */
+        get: operations["list_free_models_models_get"];
         put?: never;
-        /** Create or update a user */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["User"];
-                };
-            };
-            responses: {
-                /** @description User updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["User"];
-                    };
-                };
-                /** @description User created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["User"];
-                    };
-                };
-            };
-        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -370,36 +115,127 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        User: {
-            id?: string;
-            email?: string;
-            name?: string | null;
-            image?: string | null;
-            /** @enum {string} */
-            provider?: "github" | "google";
-            providerId?: string;
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
+        /** ChatCreate */
+        ChatCreate: {
+            /**
+             * Title
+             * @default New chat
+             */
+            title: string;
+            /** System Prompt */
+            system_prompt?: string | null;
+            /** Model */
+            model?: string | null;
         };
-        AiRequest: {
-            chatId?: string;
-            prompt?: string;
+        /** ChatDetail */
+        ChatDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** System Prompt */
+            system_prompt: string | null;
+            /** Model */
+            model: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Messages */
+            messages: components["schemas"]["MessageOut"][];
         };
-        AiResponse: {
-            result?: string;
+        /** ChatOut */
+        ChatOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** System Prompt */
+            system_prompt: string | null;
+            /** Model */
+            model: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
-        Chat: {
-            id?: string;
-            name?: string;
-            userId?: string;
-            /** @enum {string} */
-            aiProvider?: "gemini" | "deepseek";
-            /** Format: date-time */
-            createdAt?: string;
-            /** Format: date-time */
-            updatedAt?: string;
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
+        /** MessageCreate */
+        MessageCreate: {
+            /** Content */
+            content: string;
+        };
+        /** MessageOut */
+        MessageOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant" | "system";
+            /** Content */
+            content: string;
+            /** Model */
+            model: string | null;
+            /** Input Tokens */
+            input_tokens: number | null;
+            /** Output Tokens */
+            output_tokens: number | null;
+            /** Latency Ms */
+            latency_ms: number | null;
+            /** Cost Usd */
+            cost_usd: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ModelsOut */
+        ModelsOut: {
+            /** Default */
+            default: string;
+            /** Models */
+            models: string[];
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
     };
     responses: never;
@@ -408,9 +244,240 @@ export interface components {
     headers: never;
     pathItems: never;
 }
-export type SchemaUser = components['schemas']['User'];
-export type SchemaAiRequest = components['schemas']['AiRequest'];
-export type SchemaAiResponse = components['schemas']['AiResponse'];
-export type SchemaChat = components['schemas']['Chat'];
+export type SchemaChatCreate = components['schemas']['ChatCreate'];
+export type SchemaChatDetail = components['schemas']['ChatDetail'];
+export type SchemaChatOut = components['schemas']['ChatOut'];
+export type SchemaHttpValidationError = components['schemas']['HTTPValidationError'];
+export type SchemaMessageCreate = components['schemas']['MessageCreate'];
+export type SchemaMessageOut = components['schemas']['MessageOut'];
+export type SchemaModelsOut = components['schemas']['ModelsOut'];
+export type SchemaValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    health_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    list_chats_chats_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-user-email"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_chat_chats_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-user-email"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_chat_chats__chat_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-user-email"?: string | null;
+            };
+            path: {
+                chat_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_message_chats__chat_id__messages_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-user-email"?: string | null;
+            };
+            path: {
+                chat_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_message_chats__chat_id__messages_stream_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-user-email"?: string | null;
+            };
+            path: {
+                chat_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_free_models_models_get: {
+        parameters: {
+            query?: {
+                refresh?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+}

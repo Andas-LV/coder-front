@@ -1,11 +1,9 @@
-import { AiTypes } from "@/shared/types/AiTypes";
-
 export interface AiRequest {
 	chatId: string;
-	prompt: string;
-	aiProvider: AiTypes;
+	content: string;
 }
 
-export interface AiResponse {
-	result: string;
+export interface StreamHandlers {
+	onDelta: (text: string) => void;
+	signal?: AbortSignal;
 }

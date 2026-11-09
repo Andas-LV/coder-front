@@ -45,27 +45,37 @@ export default function ProfileInfo({ profile }: ProfileInfoProps) {
 		}
 	};
 
+	const lastUpdate = profile.updatedAt ?? profile.createdAt;
+
 	const infoItems: InfoItem[] = [
 		{
 			icon: <User />,
 			label: "ID пользователя",
 			value: profile.id,
 		},
-		{
-			icon: getProviderIcon(profile.provider),
-			label: "Вход через",
-			value: getProviderName(profile.provider),
-		},
+		...(profile.provider
+			? [
+					{
+						icon: getProviderIcon(profile.provider),
+						label: "Вход через",
+						value: getProviderName(profile.provider),
+					},
+				]
+			: []),
 		{
 			icon: <Mail />,
 			label: "Email",
 			value: profile.email,
 		},
-		{
-			icon: <Calendar />,
-			label: "Последнее обновление",
-			value: formatDate(profile.updatedAt),
-		},
+		...(lastUpdate
+			? [
+					{
+						icon: <Calendar />,
+						label: "Последнее обновление",
+						value: formatDate(lastUpdate),
+					},
+				]
+			: []),
 	];
 
 	return (
@@ -76,12 +86,14 @@ export default function ProfileInfo({ profile }: ProfileInfoProps) {
 						<Avatar className={styles.avatar}>
 							<AvatarImage src={profile.image} alt={profile.name} />
 							<AvatarFallback>
-								{profile.name.charAt(0).toUpperCase() || "CN"}
+								{profile.name?.charAt(0).toUpperCase() || "CN"}
 							</AvatarFallback>
 						</Avatar>
-						<div className={styles.providerBadge}>
-							{getProviderIcon(profile.provider)}
-						</div>
+						{profile.provider && (
+							<div className={styles.providerBadge}>
+								{getProviderIcon(profile.provider)}
+							</div>
+						)}
 					</div>
 					<div className={styles.userInfo}>
 						<h2 className={styles.userName}>{profile.name}</h2>

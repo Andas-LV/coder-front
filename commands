@@ -1,3 +1,5 @@
+create project - pnpm create next-app@latest
+
 pull from dev - git merge development(main)
 push to target - git push target_repo main(main)
 

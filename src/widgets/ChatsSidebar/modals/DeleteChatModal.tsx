@@ -1,10 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
-import { IChatById, useChatsStore } from "@/entities/chats";
-import { IChatsList } from "@/entities/chats/types/chatsTypes";
+import { IChatById, IChatsList, useChatsStore } from "@/entities/chats";
 import { ModalLayout } from "@/shared/layouts/ModalLayout/ModalLayout";
-import * as React from "react";
 
 interface Props {
 	chat: IChatsList | IChatById;
@@ -14,9 +14,17 @@ interface Props {
 
 export const DeleteChatModal = ({ chat, open, onOpenChange }: Props) => {
 	const { deleteChat } = useChatsStore();
+	const [loading, setLoading] = useState(false);
 
 	const handleDelete = async () => {
-		await deleteChat(chat.id);
+		setLoading(true);
+		const ok = await deleteChat(chat.id);
+		setLoading(false);
+		if (ok) {
+			onOpenChange(false);
+		} else {
+			toast.error(useChatsStore.getState().error ?? "Не удалось удалить чат");
+		}
 	};
 
 	return (
@@ -26,13 +34,13 @@ export const DeleteChatModal = ({ chat, open, onOpenChange }: Props) => {
 			title="Удалить чат"
 			description="Вы уверены, что хотите удалить чат? Это действие необратимо."
 			footer={
-				<Button variant="destructive" onClick={handleDelete}>
+				<Button variant="destructive" onClick={handleDelete} disabled={loading}>
 					Удалить
 				</Button>
 			}
 		>
 			<p>
-				Чат <strong>«{chat.name}»</strong> будет удалён навсегда.
+				Чат <strong>«{chat.title}»</strong> будет удалён навсегда.
 			</p>
 		</ModalLayout>
 	);

@@ -3,23 +3,24 @@ import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import styles from "./ChatHeader.module.scss";
-import { AI_INFO } from "../../const";
 import { useAiStore } from "@/entities/ai";
-import { ChatItemMenu } from "@/widgets/ChatsSidebar/ui/ChatItemMenu/ChatItemMenu";
 import { useChatsStore } from "@/entities/chats";
+import { getModelInfo, useModelsStore } from "@/entities/models";
+import { ChatItemMenu } from "@/widgets/ChatsSidebar/ui/ChatItemMenu/ChatItemMenu";
 
 interface ChatHeaderProps {
 	onBack?: () => void;
 }
 
 export const ChatHeader = ({ onBack }: ChatHeaderProps) => {
-	const { ai, error, clearError } = useAiStore();
-	const { chatById } = useChatsStore()
+	const { error, clearError } = useAiStore();
+	const { chatById } = useChatsStore();
+	const { defaultModel } = useModelsStore();
 
-	if (!ai || !chatById) return null;
+	if (!chatById) return null;
 
-	const aiInfo = AI_INFO[ai];
-	const IconComponent = aiInfo.icon;
+	const info = getModelInfo(chatById.model ?? defaultModel);
+	const IconComponent = info.icon;
 
 	return (
 		<div className={styles.chatHeader}>
@@ -35,15 +36,20 @@ export const ChatHeader = ({ onBack }: ChatHeaderProps) => {
 					</Button>
 				)}
 				<Avatar className={styles.aiAvatar}>
-					<AvatarFallback style={{ backgroundColor: `${aiInfo.color}15` }}>
+					<AvatarFallback style={{ backgroundColor: `${info.color}15` }}>
 						<IconComponent
 							className={styles.aiIcon}
-							style={{ color: aiInfo.color }}
+							style={{ color: info.color }}
 						/>
 					</AvatarFallback>
 				</Avatar>
 				<div className={styles.aiDetails}>
-					<h2 className={styles.aiName}>{aiInfo.name}</h2>
+					<h2 className={styles.aiName} title={chatById.title}>
+						{chatById.title}
+					</h2>
+					<span className="text-xs text-muted-foreground">
+						{info.name} · {info.company}
+					</span>
 					{error && (
 						<div className={styles.errorMessage}>
 							<AlertCircle className={styles.errorIcon} />
@@ -61,7 +67,7 @@ export const ChatHeader = ({ onBack }: ChatHeaderProps) => {
 				</div>
 			</div>
 
-			<ChatItemMenu chat={chatById}/>
+			<ChatItemMenu chat={chatById} />
 		</div>
 	);
 };

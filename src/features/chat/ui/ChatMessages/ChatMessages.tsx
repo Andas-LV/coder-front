@@ -5,12 +5,22 @@ import { MessageBubble } from "@/features/chat/ui/MessageBubble/MessageBubble";
 import { TypingIndicator } from "@/features/chat/ui/TypingIndicator/TypingIndicator";
 import { useAiStore } from "@/entities/ai";
 import { useChatsStore } from "@/entities/chats";
+import { useModelsStore } from "@/entities/models";
 
 export const ChatMessages = () => {
-	const { ai, loading } = useAiStore();
-	const { chatById } = useChatsStore();
+	const { waitingFirstToken } = useAiStore();
+	const { chatById, chatLoading } = useChatsStore();
+	const { defaultModel } = useModelsStore();
 
-	if (!ai || !chatById) return null;
+	if (!chatById) {
+		return chatLoading ? (
+			<div className={styles.messagesArea}>
+				<div className={styles.emptyState}>
+					<p>Загрузка чата...</p>
+				</div>
+			</div>
+		) : null;
+	}
 
 	return (
 		<div>
@@ -25,7 +35,9 @@ export const ChatMessages = () => {
 					{chatById.requests.map((request) => (
 						<MessageBubble key={request.id} request={request} />
 					))}
-					{loading && <TypingIndicator ai={ai} />}
+					{waitingFirstToken && (
+						<TypingIndicator model={chatById.model ?? defaultModel} />
+					)}
 				</div>
 			</div>
 		</div>

@@ -1,78 +1,99 @@
 import { create } from "zustand";
-import { sendMessageToAi } from "@/entities/ai/service/ai.service";
-import { AiRequest, AiResponse } from "../types";
-import { AiTypes } from "@/shared/types/AiTypes";
+import { streamMessageToAi } from "@/entities/ai/service/ai.service";
+import { getErrorMessage, isAbortError } from "@/shared/api/errors";
+import type { AiRequest } from "../types";
 import { generateCUID } from "@/shared/utils/generateCUID";
-import { IRequest } from "@/entities/chats";
+import { assistantMeta, toMessage, useChatsStore } from "@/entities/chats";
 
 interface AiState {
-	ai: AiTypes | null;
-	setAiState: (ai: AiTypes | null) => void;
+	/** модель открытого чата (null — модель бэкенда по умолчанию) */
+	model: string | null;
+	setModel: (model: string | null) => void;
 
-	response: AiResponse | null;
-	clearResponse: () => void;
-
-	sendReqToAi: (
-		payload: AiRequest,
-		callbacks: {
-			addRequest: (chatId: string, request: IRequest) => void;
-			updateRequestResponse: (
-				chatId: string,
-				requestId: string,
-				response: string,
-			) => void;
-		},
-	) => Promise<AiResponse | null>;
-
+	/** идёт генерация ответа */
 	loading: boolean;
-	setLoading: (value: boolean) => void;
+	/** запрос отправлен, но первый токен ещё не пришёл — показываем TypingIndicator */
+	waitingFirstToken: boolean;
+
+	sendReqToAi: (payload: AiRequest) => Promise<boolean>;
+	/** прервать текущую генерацию (частичный ответ остаётся) */
+	stop: () => void;
 
 	error: string | null;
 	clearError: () => void;
 }
 
-export const useAiStore = create<AiState>((set) => ({
-	ai: null,
-	response: null,
+let controller: AbortController | null = null;
+
+export const useAiStore = create<AiState>((set, get) => ({
+	model: null,
 	loading: false,
+	waitingFirstToken: false,
 	error: null,
 
-	sendReqToAi: async (
-		{ chatId, prompt, aiProvider },
-		{ addRequest, updateRequestResponse },
-	) => {
-		set({ loading: true, error: null });
-		const idForSession = generateCUID();
+	sendReqToAi: async ({ chatId, content }) => {
+		if (get().loading) return false;
+
+		const chats = useChatsStore.getState();
+		const localId = generateCUID();
+		let accumulated = "";
+
+		controller = new AbortController();
+		set({ loading: true, waitingFirstToken: true, error: null });
+
+		chats.addRequest(chatId, {
+			id: localId,
+			createdAt: new Date().toISOString(),
+			prompt: content,
+			response: "",
+		});
 
 		try {
-			const newRequest: IRequest = {
-				id: idForSession,
-				createdAt: new Date().toISOString(),
-				prompt: prompt,
-				response: "",
-			};
+			const dto = await streamMessageToAi(
+				{ chatId, content },
+				{
+					signal: controller.signal,
+					onDelta: (text) => {
+						if (get().waitingFirstToken) set({ waitingFirstToken: false });
+						accumulated += text;
+						useChatsStore.getState().updateRequestResponse(chatId, localId, accumulated);
+					},
+				},
+			);
 
-			addRequest(chatId, newRequest);
+			const message = toMessage(dto);
+			const store = useChatsStore.getState();
+			store.patchRequest(chatId, localId, {
+				response: message.content || accumulated,
+				...assistantMeta(message),
+			});
+			store.touchChat(chatId, message.createdAt);
+			return true;
+		} catch (err) {
+			const store = useChatsStore.getState();
 
-			const result = await sendMessageToAi({ chatId, prompt, aiProvider });
-
-			if (result && result.result) {
-				updateRequestResponse(chatId, idForSession, result.result);
+			if (isAbortError(err)) {
+				store.patchRequest(chatId, localId, {
+					response: accumulated || "_Генерация остановлена_",
+				});
+				return false;
 			}
 
-			set({ response: result, loading: false });
-			return result;
-		} catch (err) {
-			const errorMessage =
-				err instanceof Error ? err.message : "Произошла ошибка";
-			updateRequestResponse(chatId, idForSession, `Ошибка: ${errorMessage}`);
-			set({ error: errorMessage, loading: false, response: null });
-			return null;
+			const msg = getErrorMessage(err);
+			store.patchRequest(chatId, localId, {
+				response: accumulated ? `${accumulated}\n\n**Ошибка:** ${msg}` : `**Ошибка:** ${msg}`,
+				error: true,
+			});
+			set({ error: msg });
+			return false;
+		} finally {
+			controller = null;
+			set({ loading: false, waitingFirstToken: false });
 		}
 	},
 
-	setAiState: (aiType) => set({ ai: aiType }),
-	setLoading: (val) => set({ loading: val }),
+	stop: () => controller?.abort(),
+
+	setModel: (model) => set({ model }),
 	clearError: () => set({ error: null }),
-	clearResponse: () => set({ response: null }),
 }));

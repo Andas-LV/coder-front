@@ -1,13 +1,8 @@
-import { AiTypes } from "@/shared/types/AiTypes";
-
-export type IconType = "google" | "openai" | "meta" | "brain" | "sparkles";
-
 export interface AIModelData {
-	id: AiTypes;
+	id: string;
 	name: string;
 	company: string;
 	description: string;
 	features: string[];
-	iconType: IconType;
-	color: string;
+	color?: string;
 }

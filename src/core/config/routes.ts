@@ -1,10 +1,8 @@
-import { AiTypes } from "@/shared/types/AiTypes";
-
 export const routes = {
 	home: () => "/",
 	login: () => "/auth/login",
 	profile: () => "/profile",
 	resources: () => "/resources",
-	ai: (ai: AiTypes) => `/ai/${ai}`,
-	chats: () => "/chats",
+	chats: (chatId?: string) =>
+		chatId ? `/chats?chat=${encodeURIComponent(chatId)}` : "/chats",
 };

@@ -1,3 +1,3 @@
-export { sendMessageToAi } from "./service/ai.service";
+export { streamMessageToAi } from "./service/ai.service";
 export * from "./store/useAiStore";
-export type { AiRequest, AiResponse } from "./types";
+export type { AiRequest } from "./types";

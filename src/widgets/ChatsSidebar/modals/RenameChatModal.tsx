@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { IChatById, useChatsStore } from "@/entities/chats";
-import { IChatsList } from "@/entities/chats/types/chatsTypes";
+import { IChatById, IChatsList, useChatsStore } from "@/entities/chats";
 import { ModalLayout } from "@/shared/layouts/ModalLayout/ModalLayout";
-import * as React from "react";
 
 interface Props {
 	chat: IChatsList | IChatById;
@@ -16,14 +15,18 @@ interface Props {
 
 export const RenameChatModal = ({ chat, open, onOpenChange }: Props) => {
 	const { updateChat } = useChatsStore();
-	const [name, setName] = useState(chat.name);
+	const [title, setTitle] = useState(chat.title);
 	const [loading, setLoading] = useState(false);
 
 	const handleRename = async () => {
 		setLoading(true);
-		await updateChat(chat.id, { name });
+		const ok = await updateChat(chat.id, { title: title.trim() });
 		setLoading(false);
-		onOpenChange(false);
+		if (ok) {
+			onOpenChange(false);
+		} else {
+			toast.error(useChatsStore.getState().error ?? "Не удалось переименовать чат");
+		}
 	};
 
 	return (
@@ -33,14 +36,16 @@ export const RenameChatModal = ({ chat, open, onOpenChange }: Props) => {
 			title="Переименовать чат"
 			description="Введите новое имя для чата"
 			footer={
-				<Button onClick={handleRename} disabled={loading || !name.trim()}>
+				<Button onClick={handleRename} disabled={loading || !title.trim()}>
 					Сохранить
 				</Button>
 			}
 		>
 			<Input
-				value={name}
-				onChange={(e) => setName(e.target.value)}
+				value={title}
+				maxLength={255}
+				onChange={(e) => setTitle(e.target.value)}
+				onKeyDown={(e) => e.key === "Enter" && title.trim() && handleRename()}
 				placeholder="Новое имя чата"
 			/>
 		</ModalLayout>

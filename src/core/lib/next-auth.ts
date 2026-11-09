@@ -78,8 +78,12 @@ export const authOptions: NextAuthOptions = {
 
 				await axiosInstance.post("/users/sync", payload);
 			} catch (error) {
-				console.error("Error syncing user with backend:", error);
-				return false;
+				// Не блокируем вход: FastAPI создаёт пользователя сам при первом
+				// авторизованном запросе (по email из JWT), а /users/sync там пока нет.
+				console.warn(
+					"User sync with backend skipped:",
+					error instanceof Error ? error.message : error,
+				);
 			}
 			return true;
 		},

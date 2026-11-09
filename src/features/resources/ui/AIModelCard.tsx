@@ -1,69 +1,66 @@
 "use client";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { MessageCircle, Sparkles, Brain } from "lucide-react";
-import { SiGoogle, SiOpenai, SiMeta } from "react-icons/si";
-import { AIModelData, IconType } from "../types";
+import { MessageCircle } from "lucide-react";
+import { getModelInfo } from "@/entities/models";
 import styles from "../Resources.module.scss";
-import { AiTypes } from "@/shared/types/AiTypes";
 
 interface AIModelCardProps {
-	model: AIModelData;
-	onStartChat: (modelId: AiTypes) => void;
+	model: string;
+	isDefault?: boolean;
+	disabled?: boolean;
+	onStartChat: (model: string) => void;
 }
 
-const getIcon = (iconType: IconType, color: string) => {
-	const iconProps = {
-		className: styles.aiIcon,
-		style: { color },
-	};
+export default function AIModelCard({
+	model,
+	isDefault,
+	disabled,
+	onStartChat,
+}: AIModelCardProps) {
+	const info = getModelInfo(model);
+	const Icon = info.icon;
 
-	const iconMap = {
-		google: <SiGoogle {...iconProps} />,
-		openai: <SiOpenai {...iconProps} />,
-		meta: <SiMeta {...iconProps} />,
-		brain: <Brain {...iconProps} />,
-		sparkles: <Sparkles {...iconProps} />,
-	};
-
-	return iconMap[iconType];
-};
-
-export default function AIModelCard({ model, onStartChat }: AIModelCardProps) {
 	return (
 		<Card className={styles.modelCard}>
 			<CardContent className={styles.cardContent}>
 				<div className={styles.iconSection}>
 					<div
 						className={styles.iconWrapper}
-						style={{ backgroundColor: `${model.color}15` }}
+						style={{ backgroundColor: `${info.color}15` }}
 					>
-						{getIcon(model.iconType, model.color)}
+						<Icon className={styles.aiIcon} style={{ color: info.color }} />
 					</div>
 				</div>
 
 				<div className={styles.contentSection}>
 					<div className={styles.modelHeader}>
-						<h3 className={styles.modelName}>{model.name}</h3>
-						<span className={styles.company}>{model.company}</span>
+						<h3 className={styles.modelName}>{info.name}</h3>
+						<span className={styles.company}>
+							{info.company}
+							{isDefault && " · по умолчанию"}
+						</span>
 					</div>
 
-					<p className={styles.description}>{model.description}</p>
+					<p className={styles.description}>{info.description}</p>
 
-					<div className={styles.features}>
-						{model.features.map((feature, index) => (
-							<span key={index} className={styles.feature}>
-								{feature}
-							</span>
-						))}
-					</div>
+					{info.features.length > 0 && (
+						<div className={styles.features}>
+							{info.features.map((feature) => (
+								<span key={feature} className={styles.feature}>
+									{feature}
+								</span>
+							))}
+						</div>
+					)}
 				</div>
 
 				<div className={styles.actionSection}>
 					<Button
-						onClick={() => onStartChat(model.id)}
+						onClick={() => onStartChat(model)}
+						disabled={disabled}
 						className={styles.chatButton}
-						style={{ backgroundColor: model.color }}
+						style={{ backgroundColor: info.color }}
 					>
 						<MessageCircle className={styles.buttonIcon} />
 						Начать чат
