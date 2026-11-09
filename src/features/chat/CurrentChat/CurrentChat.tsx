@@ -9,6 +9,7 @@ import { useAiStore } from "@/entities/ai";
 import { useChatsStore } from "@/entities/chats";
 import { ScrollToBottomButton } from "@/shared/components/Buttons";
 import { ChatHeader } from "../ui/ChatHeader/ChatHeader";
+import { PdfViewerModal } from "../ui/PdfViewer/PdfViewerModal";
 import useIsMobile from "@/shared/hooks/useIsMobile";
 
 interface CurrentChatProps {
@@ -76,6 +77,7 @@ export const CurrentChat = ({ chatId, onBack }: CurrentChatProps) => {
 			</ScrollArea>
 
 			<ScrollToBottomButton scrollContainer={scrollContainer} />
+			<PdfViewerModal />
 		</div>
 	);
 };

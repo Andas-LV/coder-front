@@ -4,8 +4,15 @@ export {
 	fetchChatById,
 	updateChat,
 	deleteChat,
+	fetchChatFileUrl,
 } from "@/entities/chats/service/chats.service";
-export { toMessage, toRequests, assistantMeta } from "@/entities/chats/lib/mappers";
+export {
+	toMessage,
+	toRequests,
+	toSources,
+	toAttachments,
+	assistantMeta,
+} from "@/entities/chats/lib/mappers";
 export * from "@/entities/chats/store/useChatsStore";
 export type {
 	IChatsList,
@@ -14,5 +21,10 @@ export type {
 	IUpdateChat,
 	IRequest,
 	IMessage,
+	ISource,
+	IAttachment,
+	IChatFileUrl,
+	IndexingItemDto,
 	MessageOutDto,
+	SourceDto,
 } from "@/entities/chats/types/chatsTypes";

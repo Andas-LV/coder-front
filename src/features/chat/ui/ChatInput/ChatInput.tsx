@@ -1,92 +1,136 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type React from "react";
+import { toast } from "sonner";
+import { FileText, FileUp, Mic, Paperclip, Send, Square, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { Send, Mic, FilePlus, Square } from "lucide-react";
-import styles from "./ChatInput.module.scss";
-import { useAiStore } from "@/entities/ai";
-import { useChatsStore } from "@/entities/chats";
 import { useEnterSubmit } from "@/shared/hooks/hotkeys/useEnterSubmit";
-import { CodeFileModal } from "../CodeFile/CodeFileModal";
-import { CodeFilePreview } from "../CodeFile/CodeFilePreview/CodeFilePreview";
-import { CodeFile } from "@/features/chat/ui/CodeFile/types";
+import { useAiStore, validatePdf } from "@/entities/ai";
+import { useChatsStore } from "@/entities/chats";
+import styles from "./ChatInput.module.scss";
+
+const MAX_FILES = 5;
+
+const formatSize = (bytes: number) =>
+	bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} КБ` : `${(bytes / 1024 / 1024).toFixed(1)} МБ`;
+
+const sameFile = (a: File, b: File) =>
+	a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
 
 export const ChatInput = () => {
 	const { loading, sendReqToAi, stop } = useAiStore();
 	const { chatById } = useChatsStore();
 	const [message, setMessage] = useState("");
-	const [codeFiles, setCodeFiles] = useState<CodeFile[]>([]);
-	const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
-	const [editingFile, setEditingFile] = useState<CodeFile | null>(null);
+	const [files, setFiles] = useState<File[]>([]);
+	const [dragging, setDragging] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	// dragenter/dragleave срабатывают и на дочерних элементах — считаем глубину
+	const dragDepth = useRef(0);
 
-	const canAddMoreFiles = codeFiles.length < 5;
+	const canSend = !!message.trim() && !loading;
+
+	const addFiles = (list: FileList | File[]) => {
+		const next = [...files];
+		for (const file of Array.from(list)) {
+			const error = validatePdf(file);
+			if (error) {
+				toast.error(`${file.name}: ${error}`);
+				continue;
+			}
+			if (next.some((f) => sameFile(f, file))) continue;
+			if (next.length >= MAX_FILES) {
+				toast.error(`Не больше ${MAX_FILES} файлов в одном сообщении`);
+				break;
+			}
+			next.push(file);
+		}
+		setFiles(next);
+	};
+
+	const removeFile = (file: File) => setFiles((prev) => prev.filter((f) => f !== file));
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!(message.trim() || codeFiles.length > 0) || loading || !chatById) return;
+		if (!canSend || !chatById) return;
 
-		const userMessage = message.trim();
-		const filesToSend = [...codeFiles];
-
+		const content = message.trim();
+		const filesToSend = files;
 		setMessage("");
-		setCodeFiles([]);
+		setFiles([]);
 
-		let fullPrompt = userMessage;
-		if (filesToSend.length > 0) {
-			const codeContext = filesToSend
-				.map(
-					(file) =>
-						`\n\n**${file.name}** (${file.language}):\n\`\`\`${file.language}\n${file.content}\n\`\`\``,
-				)
-				.join("");
-			fullPrompt = userMessage + codeContext;
+		const result = await sendReqToAi({ chatId: chatById.id, content, files: filesToSend });
+
+		if (result === "rejected") {
+			// сервер отклонил до начала ответа (битый PDF, скан, размер…) — возвращаем всё в поле
+			setMessage(content);
+			setFiles(filesToSend);
+			toast.error(useAiStore.getState().error ?? "Не удалось отправить сообщение");
 		}
-
-		await sendReqToAi({ chatId: chatById.id, content: fullPrompt });
 	};
 
 	const { handleKeyDown } = useEnterSubmit({
 		onSubmit: handleSubmit,
 		disabled: loading,
-		shouldSubmit: !!(message.trim() || codeFiles.length > 0),
+		shouldSubmit: !!message.trim(),
 	});
 
-	const handleAddCodeFile = (file: CodeFile) => {
-		if (editingFile) {
-			setCodeFiles((prev) =>
-				prev.map((f) => (f.id === editingFile.id ? file : f)),
-			);
-			setEditingFile(null);
-		} else {
-			setCodeFiles((prev) => [...prev, file]);
-		}
-	};
-
-	const handleRemoveCodeFile = (id: string) => {
-		setCodeFiles((prev) => prev.filter((f) => f.id !== id));
-	};
-
-	const handleEditCodeFile = (file: CodeFile) => {
-		setEditingFile(file);
-		setIsCodeModalOpen(true);
-	};
-
-	const handleOpenCodeModal = () => {
-		setEditingFile(null);
-		setIsCodeModalOpen(true);
+	const dragHandlers = {
+		onDragEnter: (e: React.DragEvent) => {
+			if (!e.dataTransfer.types.includes("Files")) return;
+			e.preventDefault();
+			dragDepth.current += 1;
+			setDragging(true);
+		},
+		onDragOver: (e: React.DragEvent) => {
+			if (e.dataTransfer.types.includes("Files")) e.preventDefault();
+		},
+		onDragLeave: () => {
+			dragDepth.current = Math.max(0, dragDepth.current - 1);
+			if (dragDepth.current === 0) setDragging(false);
+		},
+		onDrop: (e: React.DragEvent) => {
+			e.preventDefault();
+			dragDepth.current = 0;
+			setDragging(false);
+			if (!loading) addFiles(e.dataTransfer.files);
+		},
 	};
 
 	if (!chatById) return null;
 
 	return (
-		<div className={styles.chatInput}>
-			<CodeFilePreview
-				files={codeFiles}
-				onRemove={handleRemoveCodeFile}
-				onEdit={handleEditCodeFile}
-			/>
+		<div className={`${styles.chatInput} ${dragging ? styles.dragging : ""}`} {...dragHandlers}>
+			{dragging && (
+				<div className={styles.dropOverlay}>
+					<FileUp />
+					Отпустите, чтобы прикрепить PDF
+				</div>
+			)}
+
+			{files.length > 0 && (
+				<div className={styles.files}>
+					{files.map((file) => (
+						<span key={`${file.name}-${file.size}-${file.lastModified}`} className={styles.fileChip}>
+							<FileText className={styles.fileIcon} />
+							<span className={styles.fileName} title={file.name}>
+								{file.name}
+							</span>
+							<span className={styles.fileSize}>{formatSize(file.size)}</span>
+							<button
+								type="button"
+								className={styles.fileRemove}
+								onClick={() => removeFile(file)}
+								disabled={loading}
+								aria-label={`Убрать ${file.name}`}
+							>
+								<X />
+							</button>
+						</span>
+					))}
+				</div>
+			)}
 
 			<form onSubmit={handleSubmit} className={styles.inputForm}>
 				<div className={styles.inputContainer}>
@@ -95,35 +139,43 @@ export const ChatInput = () => {
 						variant="ghost"
 						size="icon"
 						className={styles.attachButton}
-						onClick={handleOpenCodeModal}
-						disabled={!canAddMoreFiles || loading}
+						onClick={() => fileInputRef.current?.click()}
+						disabled={loading || files.length >= MAX_FILES}
 						title={
-							canAddMoreFiles ? "Добавить файл кода" : "Максимум 5 файлов кода"
+							files.length >= MAX_FILES
+								? `Максимум ${MAX_FILES} файлов`
+								: "Прикрепить PDF (до 20 МБ) или перетащите файл сюда"
 						}
 					>
-						<FilePlus className={styles.inputIcon} />
+						<Paperclip className={styles.inputIcon} />
 					</Button>
+					<input
+						ref={fileInputRef}
+						type="file"
+						accept="application/pdf,.pdf"
+						multiple
+						hidden
+						onChange={(e) => {
+							if (e.target.files) addFiles(e.target.files);
+							e.target.value = ""; // позволяет выбрать тот же файл снова
+						}}
+					/>
 
 					<Textarea
 						value={message}
 						onChange={(e) => setMessage(e.target.value)}
 						onKeyDown={handleKeyDown}
 						placeholder={
-							codeFiles.length > 0
-								? "Опишите что нужно сделать с кодом..."
-								: "Введите ваше сообщение..."
+							files.length > 0
+								? "Что сделать с файлом? Например: проверь резюме и укажи слабые места"
+								: "Введите сообщение или перетащите PDF..."
 						}
 						className={styles.messageInput}
 						rows={1}
 						disabled={loading}
 					/>
 
-					<Button
-						type="button"
-						variant="ghost"
-						size="icon"
-						className={styles.voiceButton}
-					>
+					<Button type="button" variant="ghost" size="icon" className={styles.voiceButton}>
 						<Mic className={styles.inputIcon} />
 					</Button>
 
@@ -139,21 +191,15 @@ export const ChatInput = () => {
 					) : (
 						<Button
 							type="submit"
-							disabled={!(message.trim() || codeFiles.length > 0)}
+							disabled={!canSend}
 							className={styles.sendButton}
+							title={files.length && !message.trim() ? "Напишите, что сделать с файлом" : undefined}
 						>
 							<Send className={styles.sendIcon} />
 						</Button>
 					)}
 				</div>
 			</form>
-
-			<CodeFileModal
-				open={isCodeModalOpen}
-				onOpenChange={setIsCodeModalOpen}
-				onSave={handleAddCodeFile}
-				editingFile={editingFile}
-			/>
 		</div>
 	);
 };

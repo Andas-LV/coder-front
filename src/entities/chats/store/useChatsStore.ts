@@ -30,6 +30,7 @@ interface ChatsState {
 	addRequest: (chatId: string, request: IRequest) => void;
 	updateRequestResponse: (chatId: string, requestId: string, response: string) => void;
 	patchRequest: (chatId: string, requestId: string, patch: Partial<IRequest>) => void;
+	removeRequest: (chatId: string, requestId: string) => void;
 	/** поднять чат наверх списка после нового сообщения */
 	touchChat: (chatId: string, updatedAt?: string) => void;
 }
@@ -128,6 +129,17 @@ export const useChatsStore = create<ChatsState>((set, get) => ({
 				requests: chatById.requests.map((r) =>
 					r.id === requestId ? { ...r, ...patch } : r,
 				),
+			},
+		});
+	},
+
+	removeRequest: (chatId, requestId) => {
+		const { chatById } = get();
+		if (chatById?.id !== chatId) return;
+		set({
+			chatById: {
+				...chatById,
+				requests: chatById.requests.filter((r) => r.id !== requestId),
 			},
 		});
 	},

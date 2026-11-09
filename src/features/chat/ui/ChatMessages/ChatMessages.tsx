@@ -8,7 +8,7 @@ import { useChatsStore } from "@/entities/chats";
 import { useModelsStore } from "@/entities/models";
 
 export const ChatMessages = () => {
-	const { waitingFirstToken } = useAiStore();
+	const { waitingFirstToken, indexing } = useAiStore();
 	const { chatById, chatLoading } = useChatsStore();
 	const { defaultModel } = useModelsStore();
 
@@ -36,7 +36,7 @@ export const ChatMessages = () => {
 						<MessageBubble key={request.id} request={request} />
 					))}
 					{waitingFirstToken && (
-						<TypingIndicator model={chatById.model ?? defaultModel} />
+						<TypingIndicator model={chatById.model ?? defaultModel} indexing={indexing} />
 					)}
 				</div>
 			</div>

@@ -1,13 +1,17 @@
 import type {
+	AttachmentDto,
 	ChatDetailDto,
 	ChatOutDto,
 	IChatById,
+	IAttachment,
 	IChatsList,
 	ICreateChat,
 	IMessage,
 	IRequest,
+	ISource,
 	IUpdateChat,
 	MessageOutDto,
+	SourceDto,
 } from "../types/chatsTypes";
 
 export const toChat = (dto: ChatOutDto): IChatsList => ({
@@ -19,6 +23,24 @@ export const toChat = (dto: ChatOutDto): IChatsList => ({
 	updatedAt: dto.updated_at,
 });
 
+export const toSource = (s: SourceDto): ISource => ({
+	n: s.n,
+	documentId: s.document_id,
+	filename: s.filename,
+	page: s.page,
+	score: s.score,
+});
+
+export const toAttachments = (
+	list: AttachmentDto[] | null | undefined,
+): IAttachment[] | null =>
+	list
+		? list.map((a) => ({ documentId: a.document_id, filename: a.filename, pages: a.pages }))
+		: null;
+
+export const toSources = (list: SourceDto[] | null | undefined): ISource[] | null =>
+	list ? list.map(toSource) : null;
+
 export const toMessage = (dto: MessageOutDto): IMessage => ({
 	id: dto.id,
 	role: dto.role,
@@ -29,12 +51,14 @@ export const toMessage = (dto: MessageOutDto): IMessage => ({
 	latencyMs: dto.latency_ms,
 	costUsd: dto.cost_usd,
 	createdAt: dto.created_at,
+	sources: toSources(dto.sources),
+	attachments: toAttachments(dto.attachments),
 });
 
 /** Метаданные ответа ассистента, которые кладём в IRequest. */
 type AssistantMeta = Pick<
 	IRequest,
-	"responseId" | "model" | "inputTokens" | "outputTokens" | "latencyMs" | "costUsd"
+	"responseId" | "model" | "inputTokens" | "outputTokens" | "latencyMs" | "costUsd" | "sources"
 >;
 
 export const assistantMeta = (m: IMessage): AssistantMeta => ({
@@ -44,6 +68,7 @@ export const assistantMeta = (m: IMessage): AssistantMeta => ({
 	outputTokens: m.outputTokens,
 	latencyMs: m.latencyMs,
 	costUsd: m.costUsd,
+	sources: m.sources,
 });
 
 /** Плоский список сообщений → пары user/assistant. system-сообщения пропускаем. */
@@ -51,7 +76,13 @@ export function toRequests(messages: IMessage[]): IRequest[] {
 	const out: IRequest[] = [];
 	for (const m of messages) {
 		if (m.role === "user") {
-			out.push({ id: m.id, createdAt: m.createdAt, prompt: m.content, response: "" });
+			out.push({
+				id: m.id,
+				createdAt: m.createdAt,
+				prompt: m.content,
+				attachments: m.attachments,
+				response: "",
+			});
 		} else if (m.role === "assistant") {
 			const last = out.at(-1);
 			if (last) out[out.length - 1] = { ...last, response: m.content, ...assistantMeta(m) };

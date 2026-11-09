@@ -1,7 +1,9 @@
 import axiosInstance from "@/shared/api/axiosInstance";
 import type {
 	ChatDetailDto,
+	ChatFileUrlDto,
 	ChatOutDto,
+	IChatFileUrl,
 	IChatById,
 	IChatsList,
 	ICreateChat,
@@ -43,6 +45,26 @@ export async function updateChat(
 		toUpdateChatDto(payload),
 	);
 	return toChat(data);
+}
+
+/** Запас, чтобы ссылка не протухла, пока PDF открывается. */
+const FILE_URL_SAFETY_MS = 60_000;
+const fileUrlCache = new Map<string, IChatFileUrl>();
+
+/** Временная ссылка на оригинал PDF из чата; переиспользуется, пока не истекла. */
+export async function fetchChatFileUrl(chatId: string, documentId: string): Promise<IChatFileUrl> {
+	const key = `${chatId}/${documentId}`;
+	const cached = fileUrlCache.get(key);
+	if (cached && cached.expiresAt - FILE_URL_SAFETY_MS > Date.now()) return cached;
+
+	const { data } = await axiosInstance.get<ChatFileUrlDto>(`/chats/${chatId}/files/${documentId}`);
+	const file: IChatFileUrl = {
+		url: data.url,
+		filename: data.filename,
+		expiresAt: Date.now() + data.expires_in * 1000,
+	};
+	fileUrlCache.set(key, file);
+	return file;
 }
 
 export async function deleteChat(id: string): Promise<void> {
